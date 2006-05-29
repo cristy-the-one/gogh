@@ -87,7 +87,7 @@ class BrushManagementDialog(GoghToolDialog):
         for brush_group in self.brush_manager.brush_groups:
             brush_group_node = self.treestore.append(None, [None, brush_group.name, False])
             for brush_data in brush_group.brushes:
-                self.treestore.append(brush_group_node, [brush_data, brush_data.name, False])
+                self.treestore.append(brush_group_node, [brush_data, brush_data.name, brush_data.is_mutable])
     
         self.treeview.set_model(self.treestore)
         
@@ -154,7 +154,7 @@ class BrushManagementDialog(GoghToolDialog):
         new_brush_data = brush_data.create_copy()
         new_brush_data.name = '%(brushname)s Copy' % {'brushname' : brush_data.name}
         self.brush_manager.add_brush(self.brush_manager.group_for_brush(brush_data), new_brush_data)
-        new_iter = self.treestore.append(self.treestore.iter_parent(current_iter), [new_brush_data, new_brush_data.name, True])
+        new_iter = self.treestore.append(self.treestore.iter_parent(current_iter), [new_brush_data, new_brush_data.name, new_brush_data.is_mutable])
         self.treeview.set_cursor(self.treestore.get_path(new_iter))
 
     def on_rename1_activate(self, widget, data=None): 

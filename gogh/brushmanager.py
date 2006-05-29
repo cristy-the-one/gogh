@@ -21,11 +21,13 @@
 from __future__ import division
 
 import gtk
+import xml.dom.minidom
 
 from brushdata import BrushData, BrushType
 from observer import Observer
 
 from goghutil import *
+from settingmanager import *
 
 class BrushGroup:
     def __init__(self, name):
@@ -35,24 +37,76 @@ class BrushGroup:
 
 class BrushManager:
     def __init__(self):
+        self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser}
+        self.brush_type_names = {BrushType.Pen : 'pen', BrushType.Eraser: 'eraser'}
         self.init_brush_list()
-        self.active_brush_data = self.brush_groups[0].brushes[0]
-        self.current_eraser_data = find_item(self.eraser_group.brushes, lambda b : b.brush_type == BrushType.Eraser)
-        self.current_pen_data = self.active_brush_data
+        self.current_pen_data = self.default_pen_data
+        self.current_eraser_data = self.default_eraser_data
+        self.active_brush_data = self.current_pen_data
         self.init_brush_menu()
         self.select_menu_item_for_active_brush_data()
         self.eraser_mode = False
         self.brush_selection_observer = Observer()
         
+    def construct_brush_from_node(self, brush_node):
+        brush = BrushData(brush_node.getAttribute("name"))
+        for child_node in brush_node.childNodes:
+            if child_node.localName=='width':
+                brush.min_width = int(child_node.getAttribute("min"))
+                brush.max_width = int(child_node.getAttribute("max"))
+            if child_node.localName=='opacity':
+                brush.min_opacity = float(child_node.getAttribute("min"))
+                brush.max_opacity = float(child_node.getAttribute("max"))                    
+            if child_node.localName=='step':
+                brush.step = int(child_node.getAttribute("value"))
+            if child_node.localName=='type':
+                brush.brush_type = self.brush_types[child_node.childNodes[0].nodeValue]
+            if child_node.localName=='default-eraser':
+                self.default_eraser_data = brush
+            if child_node.localName=='default-pen':
+                self.default_pen_data = brush
+        return brush
+        
         
     def init_brush_list(self):
+        doc = load_brush_list_xmldoc() 
         self.brush_groups = []
-        self.brush_groups.append(BrushGroup("Brushes"))
-        self.brush_groups[-1].brushes.append(BrushData(name="Pencil"))
-        self.brush_groups[-1].brushes.append(BrushData(name="Wide", min_width=20, max_width=25, step = 3))
-        self.eraser_group = BrushGroup("Erasers")
-        self.brush_groups.append(self.eraser_group)
-        self.brush_groups[-1].brushes.append(BrushData(name="Eraser", brush_type=BrushType.Eraser, min_width=5, max_width=8))
+        for group_node in doc.getElementsByTagName("brushgroup"):
+            group = BrushGroup(group_node.getAttribute("name"))
+            for brush_node in group_node.getElementsByTagName("brush"):
+                brush = self.construct_brush_from_node(brush_node)
+                group.brushes.append(brush)
+            self.brush_groups.append(group)
+            
+    def save_brush_list(self):
+        doc = xml.dom.minidom.Document()
+        root_node = doc.createElement('brushes')
+        doc.appendChild(root_node)
+        for group in self.brush_groups:
+            group_node = doc.createElement('brushgroup')
+            group_node.setAttribute('name', group.name)
+            for brush in group.brushes:
+                brush_node = doc.createElement('brush')
+                brush_node.setAttribute('name', brush.name)
+                brush_node.appendChild(doc.createElement('width'))
+                brush_node.lastChild.setAttribute('min', str(brush.min_width))
+                brush_node.lastChild.setAttribute('max', str(brush.max_width))
+                if brush.min_opacity!=0 or brush.max_opacity!=1:
+                    brush_node.appendChild(doc.createElement('opacity'))
+                    brush_node.lastChild.setAttribute('min', str(brush.min_opacity))
+                    brush_node.lastChild.setAttribute('max', str(brush.max_opacity))
+                if brush.step != 1:
+                    brush_node.appendChild(doc.createElement('step'))
+                    brush_node.lastChild.setAttribute('value', str(brush.step))
+                brush_node.appendChild(doc.createElement('type'))
+                brush_node.lastChild.appendChild(doc.createTextNode(self.brush_type_names[brush.brush_type]))
+                if self.default_pen_data == brush :
+                    brush_node.appendChild(doc.createElement('default-pen'))
+                if self.default_eraser_data == brush :
+                    brush_node.appendChild(doc.createElement('default-eraser'))
+                group_node.appendChild(brush_node)
+            root_node.appendChild(group_node)
+        save_brush_list_xmldoc(doc)
         
     def init_brush_menu(self):
         self.brush_menu = gtk.Menu()

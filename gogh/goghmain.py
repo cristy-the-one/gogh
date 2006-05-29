@@ -42,7 +42,7 @@ from goghutil import *
 from command import *
 
 APPNAME='Gogh'
-APPVERSION='0.0.1.060513'
+APPVERSION='0.0.1.060528'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
@@ -68,6 +68,7 @@ class GoghWindow:
         return colormap.query_color(image.get_pixel(0, 0))
 
     def on_gogh_drawing_window_destroy(self, widget, data=None):
+        self.brush_manager.save_brush_list()
         gtk.main_quit()
         
     def on_color_select_button_clicked(self, widget, data=None):

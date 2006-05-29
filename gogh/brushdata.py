@@ -38,6 +38,7 @@ class BrushData:
         self.brush_type = brush_type
         self.step = step
         self.originals = [self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step]
+        self.is_mutable = False
 
     def size_for_pressure(self, pressure):
         return self.min_width + (self.max_width - self.min_width) * pressure
@@ -50,6 +51,7 @@ class BrushData:
         
     def create_copy(self):
         new_brush_data = copy.copy(self)
+        new_brush_data.is_mutable = True
         new_brush_data.originals = [self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step]
         return new_brush_data
        
