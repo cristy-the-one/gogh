@@ -38,7 +38,7 @@ class BrushGroup:
 class BrushManager:
     def __init__(self):
         self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser}
-        self.brush_type_names = {BrushType.Pen : 'pen', BrushType.Eraser: 'eraser'}
+        self.brush_type_names = inverse_dictionary(self.brush_types)
         self.init_brush_list()
         self.current_pen_data = self.default_pen_data
         self.current_eraser_data = self.default_eraser_data
@@ -65,9 +65,29 @@ class BrushManager:
                 self.default_eraser_data = brush
             if child_node.localName=='default-pen':
                 self.default_pen_data = brush
-        return brush
-        
-        
+        return brush        
+            
+    def construct_node_from_brush(self, brush, xmldoc):
+        brush_node = xmldoc.createElement('brush')
+        brush_node.setAttribute('name', brush.name)
+        brush_node.appendChild(xmldoc.createElement('width'))
+        brush_node.lastChild.setAttribute('min', str(int(brush.min_width)))
+        brush_node.lastChild.setAttribute('max', str(int(brush.max_width)))
+        if brush.min_opacity!=0 or brush.max_opacity!=1:
+            brush_node.appendChild(xmldoc.createElement('opacity'))
+            brush_node.lastChild.setAttribute('min', str(brush.min_opacity))
+            brush_node.lastChild.setAttribute('max', str(brush.max_opacity))
+        if brush.step != 1:
+            brush_node.appendChild(xmldoc.createElement('step'))
+            brush_node.lastChild.setAttribute('value', str(int(brush.step)))
+        brush_node.appendChild(xmldoc.createElement('type'))
+        brush_node.lastChild.appendChild(xmldoc.createTextNode(self.brush_type_names[brush.brush_type]))
+        if self.default_pen_data == brush :
+            brush_node.appendChild(xmldoc.createElement('default-pen'))
+        if self.default_eraser_data == brush :
+            brush_node.appendChild(xmldoc.createElement('default-eraser'))
+        return brush_node        
+                
     def init_brush_list(self):
         doc = load_brush_list_xmldoc() 
         self.brush_groups = []
@@ -76,7 +96,7 @@ class BrushManager:
             for brush_node in group_node.getElementsByTagName("brush"):
                 brush = self.construct_brush_from_node(brush_node)
                 group.brushes.append(brush)
-            self.brush_groups.append(group)
+            self.brush_groups.append(group)        
             
     def save_brush_list(self):
         doc = xml.dom.minidom.Document()
@@ -86,24 +106,7 @@ class BrushManager:
             group_node = doc.createElement('brushgroup')
             group_node.setAttribute('name', group.name)
             for brush in group.brushes:
-                brush_node = doc.createElement('brush')
-                brush_node.setAttribute('name', brush.name)
-                brush_node.appendChild(doc.createElement('width'))
-                brush_node.lastChild.setAttribute('min', str(brush.min_width))
-                brush_node.lastChild.setAttribute('max', str(brush.max_width))
-                if brush.min_opacity!=0 or brush.max_opacity!=1:
-                    brush_node.appendChild(doc.createElement('opacity'))
-                    brush_node.lastChild.setAttribute('min', str(brush.min_opacity))
-                    brush_node.lastChild.setAttribute('max', str(brush.max_opacity))
-                if brush.step != 1:
-                    brush_node.appendChild(doc.createElement('step'))
-                    brush_node.lastChild.setAttribute('value', str(brush.step))
-                brush_node.appendChild(doc.createElement('type'))
-                brush_node.lastChild.appendChild(doc.createTextNode(self.brush_type_names[brush.brush_type]))
-                if self.default_pen_data == brush :
-                    brush_node.appendChild(doc.createElement('default-pen'))
-                if self.default_eraser_data == brush :
-                    brush_node.appendChild(doc.createElement('default-eraser'))
+                brush_node = self.construct_node_from_brush(brush, doc)
                 group_node.appendChild(brush_node)
             root_node.appendChild(group_node)
         save_brush_list_xmldoc(doc)
@@ -180,6 +183,14 @@ class BrushManager:
         self.brush_menu.remove(self.items_for_brushes[brush_data])
         del self.items_for_brushes[brush_data]
         self.brush_menu.show_all()
+        
+    def select_brush(self, brush_data):
+        if self.active_brush_data!=brush_data :
+            self.active_brush_data = brush_data
+            self.brush_selection_observer.notify_all()
+            self.assign_current_brushes()
+            self.select_menu_item_for_active_brush_data()
+        
        
       
            

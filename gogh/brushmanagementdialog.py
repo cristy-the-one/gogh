@@ -124,6 +124,7 @@ class BrushManagementDialog(GoghToolDialog):
             self.set_controls_for_brush_group(self.treestore.get_value(self.treestore.get_iter(self.current_path()), 1))
         else:
             self.set_controls_for_brush(brush_data)
+            self.brush_manager.select_brush(brush_data)
 
         
     def on_brush_management_form_delete_event(self, widget, data=None): 

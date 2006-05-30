@@ -91,6 +91,11 @@ def rect_to_list(r):
 def rect_from_list(r):
     return gtk.gdk.Rectangle(r[0], r[1], r[2], r[3])
     
+def inverse_dictionary(dictionary):
+    inv_dict = {}
+    for key in dictionary:
+        inv_dict[dictionary[key]]=key
+    return inv_dict    
     
 class PixbufSerializer:
     def __init__(self) :
