@@ -24,6 +24,7 @@ import gtk
 import gtk.gdk
 import gtk.glade
 import gobject
+import pango
 from goghtooldialog import GoghToolDialog
 from brushmanager import BrushManager
 from brushdata import BrushData, BrushType
@@ -83,13 +84,25 @@ class BrushManagementDialog(GoghToolDialog):
                     
         
     def setup_treestore(self):
-        self.treestore = gtk.TreeStore(object, str, bool)
+        self.treestore = gtk.TreeStore(object, str, bool, int)
         for brush_group in self.brush_manager.brush_groups:
-            brush_group_node = self.treestore.append(None, [None, brush_group.name, False])
+            brush_group_node = self.treestore.append(None, self.create_row_for_brush_group(brush_group))
             for brush_data in brush_group.brushes:
-                self.treestore.append(brush_group_node, [brush_data, brush_data.name, brush_data.is_mutable])
+                self.treestore.append(brush_group_node, self.create_row_for_brush(brush_data))
     
         self.treeview.set_model(self.treestore)
+        
+    def create_row_for_brush_group(self, group):
+        return [None, group.name, False, pango.WEIGHT_BOLD]
+
+    def create_row_for_brush(self, brush):
+        return [brush, brush.name, not brush.is_original, self.font_weight_for_brush(brush)]
+        
+    def font_weight_for_brush(self, brush):
+        if brush.is_original:
+            return pango.WEIGHT_BOLD
+        return pango.WEIGHT_NORMAL
+        
         
     def setup_treeview(self):
         brush_name_column = gtk.TreeViewColumn('Brush')
@@ -98,6 +111,7 @@ class BrushManagementDialog(GoghToolDialog):
         brush_name_column.pack_start(brush_cell, True)
         brush_name_column.add_attribute(brush_cell, 'text', 1)
         brush_name_column.add_attribute(brush_cell, 'editable', 2)
+        brush_name_column.add_attribute(brush_cell, 'weight', 3)
         brush_cell.connect('edited', self.brush_name_changed, self.treestore)
         
     def set_controls_for_brush_group(self, group_name):
@@ -155,7 +169,7 @@ class BrushManagementDialog(GoghToolDialog):
         new_brush_data = brush_data.create_copy()
         new_brush_data.name = '%(brushname)s Copy' % {'brushname' : brush_data.name}
         self.brush_manager.add_brush(self.brush_manager.group_for_brush(brush_data), new_brush_data)
-        new_iter = self.treestore.append(self.treestore.iter_parent(current_iter), [new_brush_data, new_brush_data.name, new_brush_data.is_mutable])
+        new_iter = self.treestore.append(self.treestore.iter_parent(current_iter), self.create_row_for_brush(new_brush_data))
         self.treeview.set_cursor(self.treestore.get_path(new_iter))
 
     def on_rename1_activate(self, widget, data=None): 

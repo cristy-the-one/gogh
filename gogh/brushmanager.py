@@ -65,6 +65,7 @@ class BrushManager:
                 self.default_eraser_data = brush
             if child_node.localName=='default-pen':
                 self.default_pen_data = brush
+        brush.populate_originals()
         return brush        
             
     def construct_node_from_brush(self, brush, xmldoc):
@@ -89,14 +90,24 @@ class BrushManager:
         return brush_node        
                 
     def init_brush_list(self):
-        doc = load_brush_list_xmldoc() 
+        original_doc, custom_doc = load_original_brush_list_xmldoc(), load_custom_brush_list_xmldoc()
         self.brush_groups = []
+        self.load_brushes_from_document(original_doc, True)
+        if custom_doc:
+            self.load_brushes_from_document(custom_doc, False)
+                    
+    def load_brushes_from_document(self, doc, is_original):
         for group_node in doc.getElementsByTagName("brushgroup"):
-            group = BrushGroup(group_node.getAttribute("name"))
+            group_name = group_node.getAttribute("name")
+            group = find_item(self.brush_groups, lambda g : g.name == group_name)
+            if not group:
+                group = BrushGroup(group_node.getAttribute("name"))
+                self.brush_groups.append(group)        
             for brush_node in group_node.getElementsByTagName("brush"):
                 brush = self.construct_brush_from_node(brush_node)
+                brush.is_original = is_original
                 group.brushes.append(brush)
-            self.brush_groups.append(group)        
+       
             
     def save_brush_list(self):
         doc = xml.dom.minidom.Document()
@@ -106,8 +117,9 @@ class BrushManager:
             group_node = doc.createElement('brushgroup')
             group_node.setAttribute('name', group.name)
             for brush in group.brushes:
-                brush_node = self.construct_node_from_brush(brush, doc)
-                group_node.appendChild(brush_node)
+                if not brush.is_original:
+                    brush_node = self.construct_node_from_brush(brush, doc)
+                    group_node.appendChild(brush_node)
             root_node.appendChild(group_node)
         save_brush_list_xmldoc(doc)
         

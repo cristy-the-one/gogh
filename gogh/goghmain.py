@@ -42,7 +42,7 @@ from goghutil import *
 from command import *
 
 APPNAME='Gogh'
-APPVERSION='0.0.1.060528'
+APPVERSION='0.0.1.060608'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
@@ -68,7 +68,7 @@ class GoghWindow:
         return colormap.query_color(image.get_pixel(0, 0))
 
     def on_gogh_drawing_window_destroy(self, widget, data=None):
-        self.brush_manager.save_brush_list()
+        self.save_settings()
         gtk.main_quit()
         
     def on_color_select_button_clicked(self, widget, data=None):
@@ -79,7 +79,13 @@ class GoghWindow:
         
     def on_layers_button_clicked(self, widget, data=None):
         self.layers_dialog.show()
-       
+        
+    def save_settings(self):
+        try:
+            self.brush_manager.save_brush_list()
+        except:
+            print 'Could not save the settings'            
+               
         
     def on_eventbox_motion_notify_event(self, widget, data=None):
         if self.is_pressed :

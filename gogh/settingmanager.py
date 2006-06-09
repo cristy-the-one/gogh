@@ -26,25 +26,35 @@ import os.path
 import xml.dom.minidom
 import xml.dom.ext
 
-def load_brush_list_xmldoc():
-    custom_path = os.path.join(os.path.expanduser('~'),'.gogh','brushlist.xml')
+def load_custom_brush_list_xmldoc():
+    custom_path = os.path.join(get_settings_path() ,'custom_brushlist.xml')
     if os.path.exists(custom_path):
         return xml.dom.minidom.parse(custom_path)
-    return xml.dom.minidom.parse("brushlist.xml")
+    return None
     
+def load_original_brush_list_xmldoc():
+    return xml.dom.minidom.parse("brushlist.xml")
+    custom_path = os.path.join(get_settings_path() ,'custom_brushlist.xml')
     
 def create_settings_directory():
-    path = os.path.join(os.path.expanduser('~'),'.gogh')
+    path = os.path.join(get_settings_path())
     if not os.path.exists(path):
         os.mkdir(path)
         
+def get_settings_path():
+    return os.path.join(os.path.expanduser('~'),'.gogh')
+        
         
 def save_brush_list_xmldoc(doc):
-    create_settings_directory()    
-    save_path = os.path.join(os.path.expanduser('~'),'.gogh','brushlist.xml')
-    f = open(save_path, "w")
-    xml.dom.ext.PrettyPrint(doc, f)
-    f.close()
+    try:
+        save_path = os.path.join(get_settings_path(), 'custom_brushlist.xml')
+        create_settings_directory()    
+        f = open(save_path, "w")
+        xml.dom.ext.PrettyPrint(doc, f)
+        f.close()
+    except:
+        print 'Cannot save custom brush list'
+        
 
    
 
