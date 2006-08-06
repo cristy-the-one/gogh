@@ -35,6 +35,7 @@ from brushmanager import BrushManager
 from brushstroke import BrushStroke
 from layersdialog import LayersDialog
 from resizedialog import ResizeDialog
+from scaledialog import ScaleDialog
 from savedialog import SaveDialog
 from colordialog import ColorDialog
 from brushmanagementdialog import BrushManagementDialog
@@ -138,6 +139,10 @@ class GoghWindow:
     def on_resize1_activate(self, widget, data=None): 
         self.resize_dialog.show()
        
+    def on_scale1_activate(self, widget, data=None): 
+        self.scale_dialog.show()
+        
+        
     def on_quit1_activate(self, widget, data=None): 
         gtk.main_quit()
         
@@ -161,7 +166,7 @@ class GoghWindow:
         width = xml.get_widget("width_spin").get_value_as_int()
         height = xml.get_widget("height_spin").get_value_as_int()
         new_dialog.destroy()
-        goghdoc = GoghDoc(width, height)
+        goghdoc = GoghDoc(width = width, height = height)
         self.load_document(goghdoc)
         self.goghdoc.add_new_layer()
         
@@ -169,17 +174,23 @@ class GoghWindow:
     def on_open1_activate(self, widget, data=None): 
         open_dialog = gtk.FileChooserDialog("Open", self.editor_window, gtk.FILE_CHOOSER_ACTION_OPEN, open_dialog_buttons)
         open_dialog.add_filter(self.gogh_filter)
-        open_dialog.add_filter(self.all_files_filter)
+        open_dialog.add_filter(self.image_file_filter)
+        #open_dialog.add_filter(self.all_files_filter)
         response = open_dialog.run()
         if response == gtk.RESPONSE_CANCEL :
             open_dialog.destroy()
             return
-        self.current_filename = open_dialog.get_filename()
+        filename = open_dialog.get_filename()
+        if open_dialog.get_filter()==self.gogh_filter :
+            f = open(filename, "rb")
+            goghdoc = pickle.load(f)
+            f.close()
+            self.load_document(goghdoc)
+            self.current_filename = filename
+        if open_dialog.get_filter()==self.image_file_filter:
+            goghdoc = GoghDoc(pixbuf = gtk.gdk.pixbuf_new_from_file(filename))
+            self.load_document(goghdoc)
         open_dialog.destroy()
-        f = open(self.current_filename, "rb")
-        goghdoc = pickle.load(f)
-        f.close()
-        self.load_document(goghdoc)
         
     def on_save1_activate(self, widget, data=None): 
         if not self.goghdoc.has_name() :
@@ -236,6 +247,7 @@ class GoghWindow:
         self.goghview.size_observer.add_callback(self.layers_dialog.reset_images)
         self.layers_dialog.set_document(self.goghdoc)
         self.resize_dialog.set_document(self.goghdoc)
+        self.scale_dialog.set_document(self.goghdoc)
         self.reset_window_title()
        
 
@@ -258,8 +270,9 @@ class GoghWindow:
         self.layers_dialog.dialog.add_accel_group(gtk.accel_groups_from_object(self.editor_window)[0])
         
         self.resize_dialog = ResizeDialog()
+        self.scale_dialog = ScaleDialog()
             
-        goghdoc = GoghDoc(400, 400)
+        goghdoc = GoghDoc(width = 400, height = 400)
         goghdoc.add_new_layer()
         goghdoc.command_stack.clear()
         self.load_document(goghdoc)
@@ -285,6 +298,17 @@ class GoghWindow:
         self.gogh_filter.set_name("Gogh Documents")
         self.gogh_filter.add_pattern("*.gogh")
         self.gogh_filter.add_pattern("image/gogh")
+        
+        self.image_file_filter = gtk.FileFilter()
+        self.image_file_filter.set_name("Images")
+        self.image_file_filter.add_pattern("*.jpeg")
+        self.image_file_filter.add_pattern("*.jpg")
+        self.image_file_filter.add_pattern("*.png")
+        self.image_file_filter.add_pattern("*.JPEG")
+        self.image_file_filter.add_pattern("*.JPG")
+        self.image_file_filter.add_pattern("*.PNG")
+        self.image_file_filter.add_pattern("image/jpeg")
+        self.image_file_filter.add_pattern("image/png")
         
         self.all_files_filter = gtk.FileFilter()
         self.all_files_filter.set_name("All files")

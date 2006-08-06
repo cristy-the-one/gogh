@@ -293,7 +293,37 @@ class ResizeAction(Action):
         self.goghdoc.size_observer.notify_all()
        
          
-                    
+class ScaleAction(Action):
+    def __init__(self, goghdoc, width, height):
+        self.goghdoc = goghdoc 
+        self.old_width, self.old_height = self.goghdoc.width, self.goghdoc.height
+        self.new_width, self.new_height = width, height
+        self.layer_pixbufs = {}
+        for layer in self.goghdoc.layers :
+            self.layer_pixbufs[layer.key] = layer.pixbuf.get_pixels_array()[...]
+        
+    def execute(self):
+        for layer in self.goghdoc.layers:
+            layer.pixbuf = layer.pixbuf.scale_simple(self.new_width, self.new_height, gtk.gdk.INTERP_HYPER)
+        self.goghdoc.width, self.goghdoc.height = self.new_width, self.new_height
+        self.recomposite_goghdoc()
+        
+    def undo(self):
+        self.goghdoc.width, self.goghdoc.height = self.old_width, self.old_height
+        for layer in self.goghdoc.layers :
+            layer.pixbuf = create_pixbuf(self.goghdoc.width,self.goghdoc.height)
+            pixels = layer.pixbuf.get_pixels_array() 
+            pixels[...] = self.layer_pixbufs[layer.key][...]
+        self.recomposite_goghdoc()
+
+    def redo(self):
+        self.execute()    
+        
+    def recomposite_goghdoc(self):
+        self.goghdoc.background = create_pixbuf(self.goghdoc.width,self.goghdoc.height)
+        self.goghdoc.background.fill(0xFFFFFFFF)
+        self.goghdoc.reset_composite()
+        self.goghdoc.size_observer.notify_all()
 
        
             
