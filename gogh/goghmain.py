@@ -43,7 +43,7 @@ from goghutil import *
 from command import *
 
 APPNAME='Gogh'
-APPVERSION='0.0.1.060608'
+APPVERSION='0.0.1.060813'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():

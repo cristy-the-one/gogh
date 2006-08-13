@@ -30,6 +30,8 @@ class ScaleDialog:
     def __init__(self):
         xml = gtk.glade.XML("glade/goghglade.glade", root="scale_document_dialog")
         xml.signal_autoconnect(self)  
+        self.suspend_width_spin_change = False
+        self.suspend_height_spin_change = False
         self.goghdoc = None
         self.dialog = xml.get_widget("scale_document_dialog")
         self.width_spin = xml.get_widget("width_spin")
@@ -71,30 +73,34 @@ class ScaleDialog:
         return True
         
     def on_width_spin_changed(self, widget, data=None):
-        if self.width_spin.get_text() == "" or self.width_spin.get_text().startswith('0'):
+        if  self.width_spin.get_text() == "" or self.width_spin.get_text().startswith('0'):
             return
         self.width_spin.update()
-        if self.proportional_scale_checkbutton.get_active() :
+        if self.proportional_scale_checkbutton.get_active() and not self.suspend_height_spin_change:
             w = self.width_spin.get_value_as_int()
             if self.scale_type_combobox.get_active() == 0 :
                 h = int(round(self.goghdoc.height*w/self.goghdoc.width))
             else :
                 h = w
             if h != self.height_spin.get_value_as_int() :
+                self.suspend_width_spin_change = True
                 self.height_spin.set_value(h)
-        
+                self.suspend_width_spin_change = False
+       
     def on_height_spin_changed(self, widget, data=None):
         if self.height_spin.get_text() == "" or self.height_spin.get_text().startswith('0'):
             return
         self.height_spin.update()
-        if self.proportional_scale_checkbutton.get_active() :
+        if self.proportional_scale_checkbutton.get_active() and not self.suspend_width_spin_change :
             h = self.height_spin.get_value_as_int()
             if self.scale_type_combobox.get_active() == 0 :
                 w = int(round(self.goghdoc.width*h/self.goghdoc.height))
             else :
                 w = h  
             if w != self.width_spin.get_value_as_int() :
+                self.suspend_height_spin_change = True
                 self.width_spin.set_value(w)
+                self.suspend_height_spin_change = False
         
     def on_proportional_scale_checkbutton_toggled(self, widget, data=None):
         pass
