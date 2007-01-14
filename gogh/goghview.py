@@ -84,8 +84,7 @@ class GoghView:
         xv, yv, wv, hv = self.to_view_rect(area_rect.x, area_rect.y, area_rect.width, area_rect.height)
         self.goghdoc.composite.scale(self.pixbuf0, xv-self.x_visible, yv-self.y_visible, wv, hv, -self.x_visible, -self.y_visible, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
         #self.goghdoc.composite.scale(self.pixbuf, xv, yv, wv, hv, 0, 0, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
-        self.image_observer.notify_all(gtk.gdk.Rectangle(xv-self.x_visible, yv-self.y_visible, wv, hv))
-        #self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
+        self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
         
         
     def to_model(self, x, y):
