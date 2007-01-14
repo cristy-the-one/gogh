@@ -38,6 +38,8 @@ class SaveDialog:
         self.file_type_combo.set_active(0)
         
     def on_file_type_combo_changed(self, widget, data=None): 
+        if not self.save_dialog.get_filename():
+            return
         filename = os.path.split(self.save_dialog.get_filename())[1]
         s = replace_extension(filename, self.get_extension())
         self.save_dialog.set_current_name(s)
