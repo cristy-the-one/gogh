@@ -23,10 +23,13 @@ from __future__ import division
 from Numeric import *
 import gtk.gdk
 
+from goghutil import *
 from observer import Observer
 
 class GoghView:
     def __init__(self, goghdoc, drawable):
+        self.x_visible, self.y_visible, self.w_visible, self.h_visible = 0, 0, 0, 0
+        self.pixbuf0 = None
         self.goghdoc = goghdoc
         self.drawable = drawable
         self.zoom_factor = 1.0
@@ -40,6 +43,7 @@ class GoghView:
         
     def get_size(self):
         return int(ceil(self.goghdoc.width*self.zoom_factor)), int(ceil(self.goghdoc.height*self.zoom_factor))
+        
         
     def zoom_in(self):
         self.set_zoom(self.zoom_factor*1.5)
@@ -57,20 +61,31 @@ class GoghView:
        
     def update_view_pixbuf(self, x, y, w, h):
         xv, yv, wv, hv = self.to_view_rect(x, y, w, h)
-        self.goghdoc.composite.scale(self.pixbuf, xv, yv, wv, hv, 0, 0, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
+        self.goghdoc.composite.scale(self.pixbuf0, xv-self.x_visible, yv-self.y_visible, wv, hv, -self.x_visible, -self.y_visible, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES)
+        #self.goghdoc.composite.scale(self.pixbuf, xv, yv, wv, hv, 0, 0, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
         
     def reset_view_pixbuf(self):
-        w, h = self.get_size()
-        self.pixbuf = self.goghdoc.composite.scale_simple(w, h, gtk.gdk.INTERP_TILES)
-        self.size_observer.notify_all()
-        
+        #w, h = self.get_size()
+        #self.pixbuf = self.goghdoc.composite.scale_simple(w, h, gtk.gdk.INTERP_TILES)
+        if self.pixbuf0 :
+            if (self.pixbuf0.get_width(), self.pixbuf0.get_height()) != (self.w_visible +1, self.h_visible+1):
+                del self.pixbuf0
+                self.pixbuf0 = create_pixbuf(self.w_visible +1, self.h_visible+1)
+        else :
+            self.pixbuf0 = create_pixbuf(self.w_visible +1, self.h_visible+1)
+        self.goghdoc.composite.scale(self.pixbuf0, 0, 0, self.w_visible +1, self.h_visible+1, -self.x_visible, -self.y_visible, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES)
+        #self.size_observer.notify_all()
+                
     def refresh_area(self, area_rect=None):
         if not area_rect:
-            self.reset_view_pixbuf()
+            self.reset_view_pixbuf()        
+            self.image_observer.notify_all(gtk.gdk.Rectangle(0, 0, self.w_visible, self.h_visible))
             return
         xv, yv, wv, hv = self.to_view_rect(area_rect.x, area_rect.y, area_rect.width, area_rect.height)
-        self.goghdoc.composite.scale(self.pixbuf, xv, yv, wv, hv, 0, 0, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
-        self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
+        self.goghdoc.composite.scale(self.pixbuf0, xv-self.x_visible, yv-self.y_visible, wv, hv, -self.x_visible, -self.y_visible, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
+        #self.goghdoc.composite.scale(self.pixbuf, xv, yv, wv, hv, 0, 0, self.zoom_factor, self.zoom_factor, gtk.gdk.INTERP_TILES) 
+        self.image_observer.notify_all(gtk.gdk.Rectangle(xv-self.x_visible, yv-self.y_visible, wv, hv))
+        #self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
         
         
     def to_model(self, x, y):
@@ -84,12 +99,18 @@ class GoghView:
             self.drawable.draw_pixbuf(self.gc, self.goghdoc.composite, x, y, x, y, w, h)   
             return            
         xv, yv, wv, hv = self.to_view_rect(x, y, w, h)
-        self.drawable.draw_pixbuf(self.gc, self.pixbuf, xv, yv, xv, yv, wv, hv)      
+        self.drawable.draw_pixbuf(self.gc, self.pixbuf0, xv-self.x_visible, yv-self.y_visible, xv, yv, wv, hv) 
+        #self.drawable.draw_pixbuf(self.gc, self.pixbuf, xv, yv, xv, yv, wv, hv)      
         
     def to_view_rect(self, x, y, w, h):
         xv1, yv1 = map(lambda(t): int(floor(t)), self.to_view(x, y))
         xv2, yv2 = map(lambda(t): int(ceil(t)), self.to_view(x+w, y+h))  
         return  xv1, yv1, xv2-xv1, yv2-yv1
+        
+    def reposition(self, x, y, w, h):
+        if (self.x_visible, self.y_visible) == (x, y, w, h):
+           return 
+        self.x_visible, self.y_visible, self.w_visible, self.h_visible = map(lambda k: int(k), (x, y, w, h))
         
         
         

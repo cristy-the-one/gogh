@@ -127,7 +127,15 @@ class GoghWindow:
            
     def on_drawing_area_expose_event(self, widget, data=None):    
         area = data.area    
-        self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf, area.x, area.y, area.x, area.y, area.width, area.height)
+        #self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, area.x, area.y, area.x, area.y, area.width, area.height)
+        x = int(self.drawarea_scrolled_window.get_hadjustment().get_value())
+        y = int(self.drawarea_scrolled_window.get_vadjustment().get_value())
+        w = int(self.drawarea_scrolled_window.get_hadjustment().page_size)
+        h = int(self.drawarea_scrolled_window.get_vadjustment().page_size)
+        #print area.x, area.y, area.width, area.height
+        self.reposition_view()
+        self.goghview.reset_view_pixbuf()
+        self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, 0, 0, x, y, -1, -1)
         
        
     def on_undo1_activate(self, widget, data=None): 
@@ -160,7 +168,7 @@ class GoghWindow:
         response = new_dialog.run()
         width = xml.get_widget("width_spin").get_value_as_int()
         height = xml.get_widget("height_spin").get_value_as_int()
-        if response == gtk.RESPONSE_CANCEL :
+        if response in (gtk.RESPONSE_CANCEL, gtk.RESPONSE_DELETE_EVENT) :
             new_dialog.destroy()
             return
         width = xml.get_widget("width_spin").get_value_as_int()
@@ -177,7 +185,7 @@ class GoghWindow:
         open_dialog.add_filter(self.image_file_filter)
         #open_dialog.add_filter(self.all_files_filter)
         response = open_dialog.run()
-        if response == gtk.RESPONSE_CANCEL :
+        if response in (gtk.RESPONSE_CANCEL, gtk.RESPONSE_DELETE_EVENT):
             open_dialog.destroy()
             return
         filename = open_dialog.get_filename()
@@ -216,7 +224,8 @@ class GoghWindow:
     def on_gogh_drawing_window_key_release_event(self, widget, data=None): 
         if data.keyval==0xFFE1 :
             self.reset_cursor()
-        
+
+       
     def invalidate_drawing_area(self, rect) :
         self.drawable.invalidate_rect(rect, False) 
         
@@ -227,6 +236,7 @@ class GoghWindow:
         w, h = self.goghview.get_size()
         self.draw_area.set_size_request(w, h)
         self.drawable.invalidate_rect(None, False) 
+         #self.reposition_view()
         
     def reset_window_title(self):
         caption = "Gogh - "+self.goghdoc.document_name
@@ -249,20 +259,48 @@ class GoghWindow:
         self.resize_dialog.set_document(self.goghdoc)
         self.scale_dialog.set_document(self.goghdoc)
         self.reset_window_title()
+        #self.reposition_view()
+
+    #def drawarea_scrolled_window_hscrollbar_change_value(self, widget, scroll, value, data = None):
+    #    self.reposition_view()
        
+         
+    #def drawarea_scrolled_window_vscrollbar_change_value(self, widget, scroll, value, data = None):
+    #    self.reposition_view()
+            
+            
+    def reposition_view(self):
+        x = self.drawarea_scrolled_window.get_hadjustment().get_value()
+        y = self.drawarea_scrolled_window.get_vadjustment().get_value()
+        w = self.drawarea_scrolled_window.get_hadjustment().page_size
+        h = self.drawarea_scrolled_window.get_vadjustment().page_size
+        if self.goghview:
+            self.goghview.reposition(x, y, w, h)
+        
+      
 
     def __init__(self):
         gnome.init(APPNAME, APPVERSION)   
         
+       
         enable_devices()
         xml = gtk.glade.XML("glade/goghglade.glade", root="gogh_drawing_window")
         xml.signal_autoconnect(self)    
         
+       
         self.draw_area = xml.get_widget("drawing_area")
         self.drawable = self.draw_area.window
         self.drawarea_viewport = xml.get_widget("drawarea_viewport")
         self.editor_window = xml.get_widget("gogh_drawing_window")
+
+        self.drawarea_scrolled_window = xml.get_widget("drawarea_scrolled_window")
+        #print self.drawarea_scrolled_window
+        #hscrollbar = self.drawarea_scrolled_window.get_hscrollbar()
+        #vscrollbar = self.drawarea_scrolled_window.get_vscrollbar()
+        #hscrollbar.connect("change-value", self.drawarea_scrolled_window_hscrollbar_change_value)
+        #vscrollbar.connect("change-value", self.drawarea_scrolled_window_vscrollbar_change_value)
         
+       
         self.brush_manager = BrushManager()
         
         self.layers_dialog = LayersDialog()
@@ -276,8 +314,7 @@ class GoghWindow:
         goghdoc.add_new_layer()
         goghdoc.command_stack.clear()
         self.load_document(goghdoc)
-     
-        
+            
 
         self.brush_list_button = xml.get_widget("brush_list_menubutton")
         self.brush_list_button.set_menu(self.brush_manager.brush_menu)
@@ -313,6 +350,7 @@ class GoghWindow:
         self.all_files_filter = gtk.FileFilter()
         self.all_files_filter.set_name("All files")
         self.all_files_filter.add_pattern("*")
+        
         
     def reset_cursor(self):
         brush_data = self.brush_manager.active_brush_data
