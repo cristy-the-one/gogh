@@ -29,7 +29,7 @@ from goghutil import *
 
 class BrushManagementDialog(GoghToolDialog):
     def __init__(self):
-        xml = gtk.glade.XML("glade/goghglade.glade", root="brush_management_form")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_management_form")
         xml.signal_autoconnect(self)  
         self.dialog = xml.get_widget("brush_management_form")
         self.brush_list_treeview = xml.get_widget("brush_list_treeview")

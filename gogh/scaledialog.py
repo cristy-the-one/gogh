@@ -26,9 +26,11 @@ import gtk.glade
 
 from command import ScaleAction
 
+from goghutil import get_abspath
+
 class ScaleDialog:
     def __init__(self):
-        xml = gtk.glade.XML("glade/goghglade.glade", root="scale_document_dialog")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="scale_document_dialog")
         xml.signal_autoconnect(self)  
         self.suspend_width_spin_change = False
         self.suspend_height_spin_change = False

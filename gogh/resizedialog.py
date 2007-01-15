@@ -24,11 +24,13 @@ import gtk
 import gtk.gdk
 import gtk.glade
 
+from goghutil import get_abspath
+
 from command import ResizeAction
 
 class ResizeDialog:
     def __init__(self):
-        xml = gtk.glade.XML("glade/goghglade.glade", root="resize_document_dialog")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="resize_document_dialog")
         xml.signal_autoconnect(self)  
         self.dialog = xml.get_widget("resize_document_dialog")
         self.preview_area = xml.get_widget("preview_drawing_area")

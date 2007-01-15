@@ -42,6 +42,7 @@ from brushmanagementdialog import BrushManagementDialog
 from goghutil import *
 from command import *
 
+
 APPNAME='Gogh'
 APPVERSION='0.0.1.060813'
 
@@ -163,7 +164,7 @@ class GoghWindow:
         self.reset_cursor()
         
     def on_new1_activate(self, widget, data=None): 
-        xml = gtk.glade.XML("glade/goghglade.glade", root="new_document_dialog")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="new_document_dialog")
         new_dialog = xml.get_widget("new_document_dialog")
         response = new_dialog.run()
         width = xml.get_widget("width_spin").get_value_as_int()
@@ -282,9 +283,8 @@ class GoghWindow:
     def __init__(self):
         gnome.init(APPNAME, APPVERSION)   
         
-       
         enable_devices()
-        xml = gtk.glade.XML("glade/goghglade.glade", root="gogh_drawing_window")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="gogh_drawing_window")
         xml.signal_autoconnect(self)    
         
        

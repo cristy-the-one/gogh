@@ -34,7 +34,7 @@ class BrushManagementDialog(GoghToolDialog):
     def __init__(self, brush_manager):
         self.brush_manager = brush_manager        
         
-        xml = gtk.glade.XML("glade/goghglade.glade", root="brush_management_form")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_management_form")
         xml.signal_autoconnect(self)  
         self.dialog = xml.get_widget("brush_management_form")
         self.treeview = xml.get_widget("brush_list_treeview")
@@ -50,7 +50,7 @@ class BrushManagementDialog(GoghToolDialog):
         self.max_opacity_scale = xml.get_widget("max_opacity_scale")
         self.step_scale = xml.get_widget("step_scale")
         
-        xml_menu = gtk.glade.XML("glade/goghglade.glade", root="brush_list_menu")
+        xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
         xml_menu.signal_autoconnect(self)  
         self.brush_list_menu = xml_menu.get_widget("brush_list_menu")
         self.delete_brush_menu_item = xml_menu.get_widget("delete_brush_menu_item")

@@ -33,7 +33,7 @@ class LayerControl:
         self.parent = parent
         self.goghdoc = self.parent.goghdoc
         self.layer = layer
-        xml = gtk.glade.XML("glade/goghglade.glade", root="layer_control")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="layer_control")
         xml.signal_autoconnect(self)  
         self.control = xml.get_widget("layer_control")
         self.layer_name_label = xml.get_widget("layer_name_label")
@@ -97,7 +97,7 @@ class LayerControl:
 
 class LayersDialog(GoghToolDialog):
     def __init__(self):
-        xml = gtk.glade.XML("glade/goghglade.glade", root="layers_window")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="layers_window")
         xml.signal_autoconnect(self)  
         self.dialog = xml.get_widget("layers_window")
         self.vbox = xml.get_widget("layers_vbox")

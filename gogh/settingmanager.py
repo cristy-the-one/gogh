@@ -26,6 +26,8 @@ import os.path
 import xml.dom.minidom
 import xml.dom.ext
 
+from goghutil import get_abspath
+
 def load_custom_brush_list_xmldoc():
     custom_path = os.path.join(get_settings_path() ,'custom_brushlist.xml')
     if os.path.exists(custom_path):
@@ -33,7 +35,7 @@ def load_custom_brush_list_xmldoc():
     return None
     
 def load_original_brush_list_xmldoc():
-    return xml.dom.minidom.parse("brushlist.xml")
+    return xml.dom.minidom.parse(get_abspath("brushlist.xml"))
     custom_path = os.path.join(get_settings_path() ,'custom_brushlist.xml')
     
 def create_settings_directory():

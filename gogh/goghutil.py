@@ -24,6 +24,7 @@ import gtk
 import gtk.gdk
 import time
 import re
+import os.path
 from Numeric import *
 
 def get_pixels_from_pixbuf(pixbuf, rect):
@@ -96,6 +97,9 @@ def inverse_dictionary(dictionary):
     for key in dictionary:
         inv_dict[dictionary[key]]=key
     return inv_dict    
+    
+def get_abspath(path):
+    return os.path.join(os.path.dirname(__file__), path)
     
 class PixbufSerializer:
     def __init__(self) :

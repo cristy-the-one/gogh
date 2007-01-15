@@ -30,7 +30,7 @@ class SaveDialog:
         self.formats = { 0 : 'GOGH', 1 : 'PNG', 2 : 'JPEG' }
         self.extensions = { 0 : 'gogh', 1 : 'png', 2 : 'jpeg' }
         self.goghdoc = goghdoc
-        xml = gtk.glade.XML("glade/goghglade.glade", root="save_as_dialog")
+        xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="save_as_dialog")
         xml.signal_connect("on_file_type_combo_changed",self.on_file_type_combo_changed)  
         self.save_dialog = xml.get_widget("save_as_dialog")
         self.save_dialog.set_current_name(self.goghdoc.document_name)
