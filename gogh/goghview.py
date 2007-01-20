@@ -62,13 +62,11 @@ class GoghView:
         
     def scale_with_clipping(self, x, y, w, h):    
         if x<0 :
-            w-=x
-            x=0            
+            w,x = w-x, 0            
         if x+w>self.pixbuf0.get_width() :
             w = self.pixbuf0.get_width()-x
         if y<0 :
-            h-=y
-            y=0            
+            h, y = h-y, 0            
         if y+h>self.pixbuf0.get_height() :
             h = self.pixbuf0.get_height()-y
         if w<=0 or h<=0 :
@@ -117,7 +115,7 @@ class GoghView:
         return  xv1, yv1, xv2-xv1, yv2-yv1
         
     def reposition(self, x, y, w, h):
-        if (self.x_visible, self.y_visible) == (x, y, w, h):
+        if (self.x_visible, self.y_visible, self.w_visible, self.h_visible) == (x, y, w, h):
            return 
         self.x_visible, self.y_visible, self.w_visible, self.h_visible = map(lambda k: int(k), (x, y, w, h))
         

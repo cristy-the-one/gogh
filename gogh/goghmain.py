@@ -133,7 +133,6 @@ class GoghWindow:
         y = int(self.drawarea_scrolled_window.get_vadjustment().get_value())
         w = int(self.drawarea_scrolled_window.get_hadjustment().page_size)
         h = int(self.drawarea_scrolled_window.get_vadjustment().page_size)
-        #print area.x, area.y, area.width, area.height
         self.reposition_view()
         self.goghview.reset_view_pixbuf()
         self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, 0, 0, x, y, -1, -1)
@@ -155,13 +154,31 @@ class GoghWindow:
     def on_quit1_activate(self, widget, data=None): 
         gtk.main_quit()
         
-    def on_zoom_out_button_clicked(self, widget, data=None): 
-        self.goghview.zoom_out()
-        self.reset_cursor()
+                
+    def get_view_center_model_coords(self):
+        xv, yv = self.goghview.x_visible+self.goghview.w_visible/2, self.goghview.y_visible+self.goghview.h_visible/2
+        return self.goghview.to_model(xv, yv)
+        
+    def center_view_on_model_point(self, x, y):
+        xv, yv = self.goghview.to_view(x, y)
+        w, h = self.goghview.get_size()
+        self.drawarea_scrolled_window.get_hadjustment().upper = w
+        self.drawarea_scrolled_window.get_vadjustment().upper = h
+        self.drawarea_scrolled_window.get_hscrollbar().set_value(xv-self.goghview.w_visible/2)
+        self.drawarea_scrolled_window.get_vscrollbar().set_value(yv-self.goghview.h_visible/2)
         
     def on_zoom_in_button_clicked(self, widget, data=None): 
+        xc, yc = self.get_view_center_model_coords()
         self.goghview.zoom_in()
+        self.center_view_on_model_point(xc, yc)
         self.reset_cursor()
+        
+    def on_zoom_out_button_clicked(self, widget, data=None): 
+        xc, yc = self.get_view_center_model_coords()
+        self.goghview.zoom_out()
+        self.center_view_on_model_point(xc, yc)
+        self.reset_cursor()
+
         
     def on_new1_activate(self, widget, data=None): 
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="new_document_dialog")
@@ -178,6 +195,7 @@ class GoghWindow:
         goghdoc = GoghDoc(width = width, height = height)
         self.load_document(goghdoc)
         self.goghdoc.add_new_layer()
+        self.goghdoc.command_stack.clear()
         
         
     def on_open1_activate(self, widget, data=None): 
@@ -237,7 +255,6 @@ class GoghWindow:
         w, h = self.goghview.get_size()
         self.draw_area.set_size_request(w, h)
         self.drawable.invalidate_rect(None, False) 
-         #self.reposition_view()
         
     def reset_window_title(self):
         caption = "Gogh - "+self.goghdoc.document_name
@@ -260,14 +277,8 @@ class GoghWindow:
         self.resize_dialog.set_document(self.goghdoc)
         self.scale_dialog.set_document(self.goghdoc)
         self.reset_window_title()
-        #self.reposition_view()
 
-    #def drawarea_scrolled_window_hscrollbar_change_value(self, widget, scroll, value, data = None):
-    #    self.reposition_view()
-       
-         
-    #def drawarea_scrolled_window_vscrollbar_change_value(self, widget, scroll, value, data = None):
-    #    self.reposition_view()
+
             
             
     def reposition_view(self):
@@ -277,8 +288,9 @@ class GoghWindow:
         h = self.drawarea_scrolled_window.get_vadjustment().page_size
         if self.goghview:
             self.goghview.reposition(x, y, w, h)
-        
-      
+     
+     
+
 
     def __init__(self):
         gnome.init(APPNAME, APPVERSION)   
@@ -293,13 +305,7 @@ class GoghWindow:
         self.drawarea_viewport = xml.get_widget("drawarea_viewport")
         self.editor_window = xml.get_widget("gogh_drawing_window")
 
-        self.drawarea_scrolled_window = xml.get_widget("drawarea_scrolled_window")
-        #print self.drawarea_scrolled_window
-        #hscrollbar = self.drawarea_scrolled_window.get_hscrollbar()
-        #vscrollbar = self.drawarea_scrolled_window.get_vscrollbar()
-        #hscrollbar.connect("change-value", self.drawarea_scrolled_window_hscrollbar_change_value)
-        #vscrollbar.connect("change-value", self.drawarea_scrolled_window_vscrollbar_change_value)
-        
+        self.drawarea_scrolled_window = xml.get_widget("drawarea_scrolled_window")       
        
         self.brush_manager = BrushManager()
         
