@@ -35,8 +35,7 @@ class GoghView:
         self.zoom_factor = 1.0
         self.size_observer = Observer()
         self.image_observer = Observer()
-        self.reset_view_pixbuf()
-        self.goghdoc.size_observer.add_callback(self.reset_view_pixbuf)
+        self.goghdoc.size_observer.add_callback(self.on_resize)
         self.goghdoc.pixbuf_observer.add_callback(self.refresh_area)
         self.gc = self.drawable.new_gc()
 
@@ -47,17 +46,15 @@ class GoghView:
         
     def zoom_in(self):
         self.set_zoom(self.zoom_factor*1.5)
-        self.size_observer.notify_all()
         
     def zoom_out(self):
         self.set_zoom(self.zoom_factor/1.5)
-        self.size_observer.notify_all()
 
     def set_zoom(self, zoom_factor):
         self.zoom_factor = zoom_factor
         if abs(self.zoom_factor-round(self.zoom_factor))<0.01:
             self.zoom_factor = round(self.zoom_factor)
-        self.reset_view_pixbuf()
+        self.size_observer.notify_all()
         
         
     def scale_with_clipping(self, x, y, w, h):    
@@ -88,12 +85,15 @@ class GoghView:
                 
     def refresh_area(self, area_rect=None):
         if not area_rect:
-            self.reset_view_pixbuf()        
             self.image_observer.notify_all(gtk.gdk.Rectangle(0, 0, self.w_visible, self.h_visible))
             return
         xv, yv, wv, hv = self.to_view_rect(area_rect.x, area_rect.y, area_rect.width, area_rect.height)
         self.scale_with_clipping(xv-self.x_visible, yv-self.y_visible, wv, hv)
         self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
+        
+    def on_resize(self):
+        self.reset_view_pixbuf()
+        self.size_observer.notify_all()
         
         
     def to_model(self, x, y):
