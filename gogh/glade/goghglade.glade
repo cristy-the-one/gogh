@@ -260,6 +260,7 @@
           <widget class="GtkScrolledWindow" id="drawarea_scrolled_window">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="resize_mode">GTK_RESIZE_IMMEDIATE</property>
             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <signal name="size_allocate" handler="on_drawarea_scrolled_window_size_allocate"/>
@@ -439,7 +440,7 @@
               <widget class="GtkSpinButton" id="width_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">400 0 1024 1 50 50</property>
+                <property name="adjustment">400 0 10240 1 50 50</property>
                 <property name="climb_rate">1</property>
               </widget>
               <packing>
@@ -453,7 +454,7 @@
               <widget class="GtkSpinButton" id="height_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">400 0 1000 1 50 50</property>
+                <property name="adjustment">400 0 10240 1 50 50</property>
                 <property name="climb_rate">1</property>
               </widget>
               <packing>
@@ -842,8 +843,8 @@
     </child>
   </widget>
   <widget class="GtkFileChooserDialog" id="save_as_dialog">
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
+    <property name="do_overwrite_confirmation">True</property>
     <property name="visible">True</property>
     <property name="modal">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
