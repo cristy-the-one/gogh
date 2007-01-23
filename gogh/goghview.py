@@ -110,14 +110,14 @@ class GoghView:
         self.drawable.draw_pixbuf(self.gc, self.pixbuf0, xv-self.x_visible, yv-self.y_visible, xv, yv, wv, hv) 
         
     def to_view_rect(self, x, y, w, h):
-        xv1, yv1 = map(lambda(t): int(floor(t)), self.to_view(x, y))
-        xv2, yv2 = map(lambda(t): int(ceil(t)), self.to_view(x+w, y+h))  
+        xv1, yv1 = [int(floor(t)) for t in self.to_view(x, y)]
+        xv2, yv2 = [int(ceil(t)) for t in self.to_view(x+w, y+h)]
         return  xv1, yv1, xv2-xv1, yv2-yv1
         
     def reposition(self, x, y, w, h):
         if (self.x_visible, self.y_visible, self.w_visible, self.h_visible) == (x, y, w, h):
            return 
-        self.x_visible, self.y_visible, self.w_visible, self.h_visible = map(lambda k: int(k), (x, y, w, h))
+        self.x_visible, self.y_visible, self.w_visible, self.h_visible = [int(k) for k in (x, y, w, h)]
         
         
         
