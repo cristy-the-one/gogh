@@ -141,6 +141,9 @@ class LayersDialog(GoghToolDialog):
         for layer_control in self.layer_controls:
             layer_control.reset()
             
+    def on_layers_window_visibility_notify_event(self, widget, data=None):
+        self.reset_images()
+            
     def select_layer(self, layer_key):
         self.selected_layer_key = layer_key
         for layer_control in self.layer_controls:
