@@ -44,7 +44,7 @@ from command import *
 
 
 APPNAME='Gogh'
-APPVERSION='0.0.1.060813'
+APPVERSION='0.0.1.070127'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
