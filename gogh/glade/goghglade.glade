@@ -109,18 +109,11 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkImageMenuItem" id="resize1">
+                      <widget class="GtkMenuItem" id="resize1">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Resize</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_resize1_activate"/>
-                        <child internal-child="image">
-                          <widget class="GtkImage" id="image6">
-                            <property name="visible">True</property>
-                            <property name="stock">gtk-dialog-error</property>
-                            <property name="icon_size">1</property>
-                          </widget>
-                        </child>
                       </widget>
                     </child>
                     <child>
