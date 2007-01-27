@@ -49,6 +49,9 @@ class GoghView:
         
     def zoom_out(self):
         self.set_zoom(self.zoom_factor/1.5)
+        
+    def zoom_normal(self):
+        self.set_zoom(1.0)
 
     def set_zoom(self, zoom_factor):
         self.zoom_factor = zoom_factor

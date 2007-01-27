@@ -129,10 +129,11 @@ class GoghWindow:
     def on_drawing_area_expose_event(self, widget, data=None):    
         area = data.area    
         #self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, area.x, area.y, area.x, area.y, area.width, area.height)
-        x = int(self.drawarea_scrolled_window.get_hadjustment().get_value())
-        y = int(self.drawarea_scrolled_window.get_vadjustment().get_value())
-        w = int(self.drawarea_scrolled_window.get_hadjustment().page_size)
-        h = int(self.drawarea_scrolled_window.get_vadjustment().page_size)
+        h_adj, v_adj = self.drawarea_scrolled_window.get_hadjustment(), self.drawarea_scrolled_window.get_vadjustment()
+        x = int(h_adj.get_value())
+        y = int(v_adj.get_value())
+        w = int(h_adj.page_size)
+        h = int(v_adj.page_size) 
         self.reposition_view()
         self.goghview.reset_view_pixbuf()
         self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, 0, 0, x, y, -1, -1)
@@ -167,17 +168,40 @@ class GoghWindow:
         self.drawarea_scrolled_window.get_hscrollbar().set_value(xv-self.goghview.w_visible/2)
         self.drawarea_scrolled_window.get_vscrollbar().set_value(yv-self.goghview.h_visible/2)
         
-    def on_zoom_in_button_clicked(self, widget, data=None): 
+        
+    def zoom_in(self):
         xc, yc = self.get_view_center_model_coords()
         self.goghview.zoom_in()
         self.center_view_on_model_point(xc, yc)
         self.reset_cursor()
         
-    def on_zoom_out_button_clicked(self, widget, data=None): 
+    def zoom_out(self):
         xc, yc = self.get_view_center_model_coords()
         self.goghview.zoom_out()
         self.center_view_on_model_point(xc, yc)
         self.reset_cursor()
+        
+    def zoom_normal(self):
+        xc, yc = self.get_view_center_model_coords()
+        self.goghview.zoom_normal()
+        self.center_view_on_model_point(xc, yc)
+        self.reset_cursor()
+        
+        
+    def on_zoom_in_button_clicked(self, widget, data=None): 
+        self.zoom_in()
+        
+    def on_zoom_out_button_clicked(self, widget, data=None): 
+        self.zoom_out()
+        
+    def on_zoom_in_menuitem_activate(self, widget, data=None):
+        self.zoom_in()
+        
+    def on_zoom_out_menuitem_activate(self, widget, data=None):
+        self.zoom_out()
+        
+    def on_zoom_normal_menuitem_activate(self, widget, data=None):
+        self.zoom_normal()
 
         
     def on_new1_activate(self, widget, data=None): 
