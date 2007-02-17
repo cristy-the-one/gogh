@@ -31,6 +31,8 @@ from brushprovider import BrushProvider
 from brushdata import BrushType
 from goghutil import *
 
+use_smudge = True
+
 class DabRect:
     def __init__(self, x1, y1, x2, y2, brush_provider, pressure):
         self.brush_provider = brush_provider
@@ -67,35 +69,48 @@ class DabRect:
         pixbuf.get_pixels_array()[:,:,3] = (255*self.alphas[y0:y0+new_h, x0:x0+new_w]).astype(UInt8)
         return pixbuf
         
-        
-class BrushStroke:
-    def __init__(self, goghview, current_layer_key, color, brush_options):
+class AbstractBrushStroke:
+    def __init__(self, goghview, current_layer_key):
         self.goghview = goghview
-        self.color = color
         self.goghdoc = self.goghview.goghdoc
         self.current_layer_key = current_layer_key
-        self.brush_options = brush_options
-        self.bounding_rectangle = None
-        self.brush_provider = BrushProvider(brush_options)
-        
+         
     def start_draw(self, x, y): 
         if len(self.goghdoc.layers) == 0 :
             return
         self.last_x = x
         self.last_y = y
-        self.offset = 0
-        #if self.brush_options.brush_type == BrushType.Smudge :
-        #    c = 256*self.goghdoc.layer_for_key(self.current_layer_key).pixbuf.get_pixels_array()[int(round(y)), int(round(x)), 0:3]
-        #    self.color = gtk.gdk.Color(c[0], c[1], c[2])
-            #print self.color.red, self.color.green, self.color.blue
+        self.offset = 0          
+       
+    def draw_to(self, x, y, pressure):
+        if(len(self.goghdoc.layers) == 0):
+            return
+        delta_x = x-self.last_x
+        delta_y = y-self.last_y
+        if delta_x==0 and delta_y :
+            return
+        h = math.hypot(delta_x, delta_y)
+        intermediate_points = arange(self.offset, h, self.brush_options.step)
+        intermediate_coords = [(self.last_x+delta_x*t/h, self.last_y+delta_y*t/h) for t in intermediate_points]
+        self.apply_brush_stroke(self.last_x, self.last_y, x, y, intermediate_coords, pressure)
+        if len(intermediate_points)>0 :
+            self.offset = self.brush_options.step-(h-intermediate_points[-1])
+        else :
+            self.offset -= h
+        self.last_x, self.last_y = x, y
+    
+    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
+        raise NotImplementedError('Must be implemented in subclass')
+  
         
-    def mix_colors(self, color1, color2):
-        k = self.brush_options.smudge_param
-        c1, c2 = map(lambda(c): array([c.red, c.green, c.blue]), [color1, color2])
-        c = (k*c2+(1-k)*c1).astype(UInt16)
-        return gtk.gdk.Color(c[0], c[1], c[2])
-               
-     
+class BrushStroke (AbstractBrushStroke):
+    def __init__(self, goghview, current_layer_key, color, brush_options):
+        AbstractBrushStroke.__init__(self, goghview, current_layer_key)
+        self.color = color
+        self.brush_options = brush_options
+        self.bounding_rectangle = None
+        self.brush_provider = BrushProvider(brush_options)        
+    
     def put_dab_on_layer(self, pressure):    
         opacity = self.brush_options.opacity_for_pressure(pressure)
         dab_pixbuf = self.dab_rect.get_trimmed_pixbuf(self.color, self.goghdoc.width, self.goghdoc.height)
@@ -108,37 +123,20 @@ class BrushStroke:
             self.goghdoc.put_pixbuf_on_layer(dab_pixbuf, x, y, 1, self.current_layer_key);
         self.goghview.update_view_pixbuf(x, y, dab_pixbuf.get_width(), dab_pixbuf.get_height())
         self.goghview.redraw_image_fragment_for_model_coord(x, y, dab_pixbuf.get_width(), dab_pixbuf.get_height())
-        
-    def draw_to(self, x, y, pressure):
-        if(len(self.goghdoc.layers) == 0):
-            return
-        if x == self.last_x and y == self.last_y :
-            return
-        #if self.brush_options.brush_type == BrushType.Smudge :
-        #    c = 256*self.goghdoc.layer_for_key(self.current_layer_key).pixbuf.get_pixels_array()[int(round(y)), int(round(x)), 0:3]
-        #    self.color = self.mix_colors(self.color, gtk.gdk.Color(c[0], c[1], c[2]))
-        self.dab_rect = DabRect(self.last_x, self.last_y, x, y, self.brush_provider, pressure)        
-        h = math.hypot(x-self.last_x, y-self.last_y)
-        intermediate_points = arange(self.offset, h, self.brush_options.step)
-        delta_x = x-self.last_x
-        delta_y = y-self.last_y
-        self.expand_bounding_rectangle(self.dab_rect.get_rectangle())
-        for t in intermediate_points:
-            k = t/h
-            self.dab_rect.put_brush(self.last_x+delta_x*k, self.last_y+delta_y*k)  
-        self.put_dab_on_layer(pressure)    
-        if len(intermediate_points)>0 :
-            self.offset = self.brush_options.step-(h-intermediate_points[-1])
-        else :
-            self.offset -= h
-        self.last_x, self.last_y = x, y
-        
+            
     def expand_bounding_rectangle(self, new_rect):
         if self.bounding_rectangle :
             self.bounding_rectangle = self.bounding_rectangle.union(new_rect)
         else:
             self.bounding_rectangle = new_rect.copy()
         self.bounding_rectangle = self.bounding_rectangle.intersect(gtk.gdk.Rectangle(0, 0, self.goghdoc.width, self.goghdoc.height))
+    
+    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
+        self.dab_rect = DabRect(x0, y0, x1, y1, self.brush_provider, pressure)        
+        self.expand_bounding_rectangle(self.dab_rect.get_rectangle())
+        for x, y in intermediate_coords:
+            self.dab_rect.put_brush(x, y)  
+        self.put_dab_on_layer(pressure)    
                                
         
         
