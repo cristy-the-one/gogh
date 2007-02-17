@@ -31,8 +31,6 @@ from brushprovider import BrushProvider
 from brushdata import BrushType
 from goghutil import *
 
-use_smudge = True
-
 class DabRect:
     def __init__(self, x1, y1, x2, y2, brush_provider, pressure):
         self.brush_provider = brush_provider
@@ -42,10 +40,7 @@ class DabRect:
         self.width, self.height = int(ceil(abs(x1-x2)))+brush_width, int(ceil(abs(y1-y2)))+brush_height
         self.alphas = zeros((self.height, self.width), Float)  
         
-        
-    def get_rectangle(self):
-        return gtk.gdk.Rectangle(self.x, self.y, self.width, self.height)
-        
+                
     def put_brush(self, x, y):
         x-=self.x
         y-=self.y
@@ -70,10 +65,13 @@ class DabRect:
         return pixbuf
         
 class AbstractBrushStroke:
-    def __init__(self, goghview, current_layer_key):
+    def __init__(self, goghview, current_layer_key, brush_options):
         self.goghview = goghview
         self.goghdoc = self.goghview.goghdoc
         self.current_layer_key = current_layer_key
+        self.brush_options = brush_options
+        self.brush_provider = BrushProvider(brush_options)        
+        self.bounding_rectangle = None
          
     def start_draw(self, x, y): 
         if len(self.goghdoc.layers) == 0 :
@@ -87,17 +85,33 @@ class AbstractBrushStroke:
             return
         delta_x = x-self.last_x
         delta_y = y-self.last_y
-        if delta_x==0 and delta_y :
+        if delta_x==0 and delta_y==0:
             return
         h = math.hypot(delta_x, delta_y)
         intermediate_points = arange(self.offset, h, self.brush_options.step)
         intermediate_coords = [(self.last_x+delta_x*t/h, self.last_y+delta_y*t/h) for t in intermediate_points]
+        self.expand_bounding_rectangle(self.get_dab_rectangle(self.last_x, self.last_y, x, y, pressure))
         self.apply_brush_stroke(self.last_x, self.last_y, x, y, intermediate_coords, pressure)
         if len(intermediate_points)>0 :
             self.offset = self.brush_options.step-(h-intermediate_points[-1])
         else :
             self.offset -= h
         self.last_x, self.last_y = x, y
+        
+    def get_dab_rectangle(self, x0, y0, x1, y1, pressure):
+        brush_width, brush_height = self.brush_provider.get_brush_dimensions(pressure)
+        x, y = int(floor(min(x0, x1)))-brush_width//2, int(floor(min(y0, y1)))-brush_height//2
+        width, height = int(ceil(abs(x0-x1)))+brush_width, int(ceil(abs(y0-y1)))+brush_height
+        return gtk.gdk.Rectangle(x, y, width, height)
+
+        
+    def expand_bounding_rectangle(self, new_rect):
+        if self.bounding_rectangle :
+            self.bounding_rectangle = self.bounding_rectangle.union(new_rect)
+        else:
+            self.bounding_rectangle = new_rect.copy()
+        self.bounding_rectangle = self.bounding_rectangle.intersect(gtk.gdk.Rectangle(0, 0, self.goghdoc.width, self.goghdoc.height))
+
     
     def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
         raise NotImplementedError('Must be implemented in subclass')
@@ -105,11 +119,8 @@ class AbstractBrushStroke:
         
 class BrushStroke (AbstractBrushStroke):
     def __init__(self, goghview, current_layer_key, color, brush_options):
-        AbstractBrushStroke.__init__(self, goghview, current_layer_key)
+        AbstractBrushStroke.__init__(self, goghview, current_layer_key, brush_options)
         self.color = color
-        self.brush_options = brush_options
-        self.bounding_rectangle = None
-        self.brush_provider = BrushProvider(brush_options)        
     
     def put_dab_on_layer(self, pressure):    
         opacity = self.brush_options.opacity_for_pressure(pressure)
@@ -124,19 +135,19 @@ class BrushStroke (AbstractBrushStroke):
         self.goghview.update_view_pixbuf(x, y, dab_pixbuf.get_width(), dab_pixbuf.get_height())
         self.goghview.redraw_image_fragment_for_model_coord(x, y, dab_pixbuf.get_width(), dab_pixbuf.get_height())
             
-    def expand_bounding_rectangle(self, new_rect):
-        if self.bounding_rectangle :
-            self.bounding_rectangle = self.bounding_rectangle.union(new_rect)
-        else:
-            self.bounding_rectangle = new_rect.copy()
-        self.bounding_rectangle = self.bounding_rectangle.intersect(gtk.gdk.Rectangle(0, 0, self.goghdoc.width, self.goghdoc.height))
-    
+   
     def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
         self.dab_rect = DabRect(x0, y0, x1, y1, self.brush_provider, pressure)        
-        self.expand_bounding_rectangle(self.dab_rect.get_rectangle())
         for x, y in intermediate_coords:
             self.dab_rect.put_brush(x, y)  
         self.put_dab_on_layer(pressure)    
                                
+                               
+class SmudgeBrushStroke (AbstractBrushStroke):
+    def __init__(self, goghview, current_layer_key, brush_options):
+        AbstractBrushStroke.__init__(self, goghview, current_layer_key)
+        self.brush_options = brush_options
+        self.bounding_rectangle = None
+        self.brush_provider = BrushProvider(brush_options)        
         
         
