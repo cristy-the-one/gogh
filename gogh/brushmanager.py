@@ -37,7 +37,7 @@ class BrushGroup:
 
 class BrushManager:
     def __init__(self):
-        self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser}
+        self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser, 'smudge': BrushType.Smudge}
         self.brush_type_names = inverse_dictionary(self.brush_types)
         self.init_brush_list()
         self.current_pen_data = self.default_pen_data

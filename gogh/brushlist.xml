@@ -13,6 +13,12 @@
             <step value="3"/>
         </brush>
     </brushgroup>
+    <brushgroup name="Smudge Brushes">
+        <brush name="Smudge Brush">
+            <width min="8" max="10"/>
+            <type>smudge</type>  
+       </brush>
+    </brushgroup>
     <brushgroup name="Erasers">
         <brush name="Eraser" default_eraser="true">
             <default-eraser/>

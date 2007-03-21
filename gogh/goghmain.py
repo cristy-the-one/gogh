@@ -31,8 +31,9 @@ from Numeric import *
 
 from goghdoc import GoghDoc
 from goghview import GoghView
+from brushdata import BrushType
 from brushmanager import BrushManager
-from brushstroke import BrushStroke
+from brushstroke import BrushStroke, SmudgeBrushStroke
 from layersdialog import LayersDialog
 from resizedialog import ResizeDialog
 from scaledialog import ScaleDialog
@@ -107,7 +108,10 @@ class GoghWindow:
         else :
             x, y = self.goghview.to_model(x, y)
             color = self.color_select_dialog.colorsel.get_current_color()
-            self.brush_stroke = BrushStroke(self.goghview, self.layers_dialog.selected_layer_key, color, self.brush_manager.active_brush_data)
+            if self.brush_manager.active_brush_data.brush_type == BrushType.Smudge:
+                self.brush_stroke = SmudgeBrushStroke(self.goghview, self.layers_dialog.selected_layer_key, self.brush_manager.active_brush_data)
+            else :
+                self.brush_stroke = BrushStroke(self.goghview, self.layers_dialog.selected_layer_key, color, self.brush_manager.active_brush_data)
             if data.device.source==gtk.gdk.SOURCE_ERASER:
                 self.brush_stroke.is_erazer= True
             self.saved_pixbuf = self.get_selected_layer_pixbuf().copy()
@@ -384,7 +388,7 @@ class GoghWindow:
         
     def reset_cursor(self):
         brush_data = self.brush_manager.active_brush_data
-        w1, w2 = map(lambda(w): int(round(w*self.goghview.zoom_factor)) | 1, [brush_data.min_width, brush_data.max_width])
+        w1, w2 = [int(round(w*self.goghview.zoom_factor)) | 1 for w in (brush_data.min_width, brush_data.max_width)]
         d = max(w1, w2)
         pm = gtk.gdk.Pixmap(None, d+1, d+1,1)
         colormap = gtk.gdk.colormap_get_system()

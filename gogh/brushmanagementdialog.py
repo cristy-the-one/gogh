@@ -62,6 +62,7 @@ class BrushManagementDialog(GoghToolDialog):
         self.liststore = gtk.ListStore(object, str)
         self.liststore.append([BrushType.Pen, "Pen"])
         self.liststore.append([BrushType.Eraser, "Eraser"])
+        self.liststore.append([BrushType.Smudge, "Smudge"])
         self.brush_type_combobox.set_model(self.liststore)
         combo_cell = gtk.CellRendererText()
         self.brush_type_combobox.pack_start(combo_cell, True)
