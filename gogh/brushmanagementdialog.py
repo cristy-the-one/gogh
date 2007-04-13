@@ -28,7 +28,9 @@ import pango
 from goghtooldialog import GoghToolDialog
 from brushmanager import BrushManager
 from brushdata import BrushData, BrushType
-from goghutil import *
+from brushsettingcontrol import BrushSettingControl
+from goghutil import *    
+
 
 class BrushManagementDialog(GoghToolDialog):
     def __init__(self, brush_manager):
@@ -44,11 +46,9 @@ class BrushManagementDialog(GoghToolDialog):
         self.brush_group_name_label = xml.get_widget("brush_group_name_label")
         
         self.brush_type_combobox = xml.get_widget("brush_type_combobox")
-        self.min_size_scale = xml.get_widget("min_size_scale")
-        self.max_size_scale = xml.get_widget("max_size_scale")
-        self.min_opacity_scale = xml.get_widget("min_opacity_scale")
-        self.max_opacity_scale = xml.get_widget("max_opacity_scale")
-        self.step_scale = xml.get_widget("step_scale")
+        
+        self.left_vbox = xml.get_widget("left_vbox")
+        self.right_vbox = xml.get_widget("right_vbox")
         
         xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
         xml_menu.signal_autoconnect(self)  
@@ -67,15 +67,53 @@ class BrushManagementDialog(GoghToolDialog):
         combo_cell = gtk.CellRendererText()
         self.brush_type_combobox.pack_start(combo_cell, True)
         self.brush_type_combobox.add_attribute(combo_cell, 'text', 1)
+        self.brush_controls = []
         
         
     def show(self):
+        self.create_controls_for_brush_type(self.brush_manager.active_brush_data.brush_type)
         GoghToolDialog.show(self)
         row = self.get_row_for_brush(self.brush_manager.active_brush_data)
         if row:
             self.treeview.expand_to_path(row.path)
             self.treeview.set_cursor(row.path, self.treeview.get_column(0))
-                    
+    
+    def remove_all_brush_control(self):
+        for child_control in self.left_vbox.get_children():
+            self.left_vbox.remove(child_control)
+        for child_control in self.right_vbox.get_children():
+            self.right_vbox.remove(child_control)             
+            
+    def set_brush_data_for_all_brush_controls(self, brush_data):
+        for brush_control in self.brush_controls:
+            brush_control.set_brush_data(brush_data)
+       
+        
+    def create_controls_for_brush_type(self, brush_type):
+        self.remove_all_brush_control()
+        min_size_control = BrushSettingControl(self, 'min_width', 'Brush size at lowest pressure', 1, 30, 0)
+        max_size_control = BrushSettingControl(self, 'max_width', 'Brush size at highest pressure', 1, 30, 0)
+        self.brush_controls = [min_size_control, max_size_control]
+        
+        self.left_vbox.pack_start(min_size_control.control, False, False)
+        self.right_vbox.pack_start(max_size_control.control, False, False)
+        
+        if brush_type!=BrushType.Smudge:
+            min_opacity_control = BrushSettingControl(self, 'min_opacity', 'Opacity at lowest pressure', 0, 1, 2)
+            max_opacity_control = BrushSettingControl(self, 'max_opacity', 'Opacity at highest pressure', 0, 1, 2)
+            self.left_vbox.pack_start(min_opacity_control.control, False, False)
+            self.right_vbox.pack_start(max_opacity_control.control, False, False)
+            self.brush_controls += [min_opacity_control, max_opacity_control]
+            
+        if brush_type==BrushType.Smudge:
+            smudge_amount_control = BrushSettingControl(self, 'smudge_amount', 'Smudge amount', 0, 1, 2)
+            self.left_vbox.pack_start(smudge_amount_control.control, False, False)
+            self.brush_controls += [smudge_amount_control]
+            
+        step_control = BrushSettingControl(self, 'step', 'Step', 1, 15, 0)
+        self.left_vbox.pack_start(step_control.control, False, False)
+        self.brush_controls += [step_control]
+                                
     def get_row_for_brush(self, brush_data):
         for group_row in self.treestore:
             for brush_row in group_row.iterchildren():
@@ -125,13 +163,8 @@ class BrushManagementDialog(GoghToolDialog):
         self.brush_group_controls.hide()
         self.brush_settings_controls.show()
         self.restore_brush_settings_button.show()        
-        self.min_size_scale.set_value(brush_data.min_width)
-        self.max_size_scale.set_value(brush_data.max_width)
-        self.min_opacity_scale.set_value(brush_data.min_opacity)
-        self.max_opacity_scale.set_value(brush_data.max_opacity)
-        self.step_scale.set_value(brush_data.step)
         self.brush_type_combobox.set_active(find_item(self.liststore, lambda(row): row[0]==brush_data.brush_type).path[0])
-        
+        self.set_brush_data_for_all_brush_controls(brush_data)
         
     def on_brush_list_treeview_cursor_changed(self, widget, data=None): 
         brush_data = self.treestore.get_value(self.treestore.get_iter(self.current_path()), 0)
@@ -192,44 +225,18 @@ class BrushManagementDialog(GoghToolDialog):
     def current_path(self):
         return self.treeview.get_cursor()[0]
         
-    def on_min_size_scale_value_changed(self, scale):
-        if self.brush_manager.active_brush_data.min_width == int(scale.get_value()):
-            return
-        brush_data = self.treestore[self.current_path()][0]
-        brush_data.min_width = int(scale.get_value())
-        self.brush_manager.brush_selection_observer.notify_all()
-       
-    def on_max_size_scale_value_changed(self, scale):
-        if self.brush_manager.active_brush_data.max_width == int(scale.get_value()):
-            return
-        brush_data = self.treestore[self.current_path()][0]
-        brush_data.max_width = int(scale.get_value())
-        self.brush_manager.brush_selection_observer.notify_all()
-    
-    def on_min_opacity_scale_value_changed(self, scale):
-        if self.brush_manager.active_brush_data.min_opacity == scale.get_value():
-            return
-        brush_data = self.treestore[self.current_path()][0]
-        brush_data.min_opacity = scale.get_value()
- 
-    def on_max_opacity_scale_value_changed(self, scale):
-        if self.brush_manager.active_brush_data.max_opacity == scale.get_value():
-            return
-        brush_data = self.treestore[self.current_path()][0]
-        brush_data.max_opacity = scale.get_value()
+    def get_current_brush_data(self):
+        return self.treestore[self.current_path()][0]
         
-    def on_step_scale_value_changed(self, scale):
-        if self.brush_manager.active_brush_data.step == scale.get_value():
-            return
-        brush_data = self.treestore[self.current_path()][0]
-        brush_data.step = scale.get_value()
-                
+                    
     def on_brush_type_combobox_changed(self, widget, data=None):
         new_type = self.liststore[self.brush_type_combobox.get_active()][0]
         if self.brush_manager.active_brush_data.brush_type == new_type:
             return
         brush_data = self.treestore[self.current_path()][0]
         brush_data.brush_type = new_type
+        self.create_controls_for_brush_type(brush_data.brush_type)
+
         
 
         
