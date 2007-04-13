@@ -29,7 +29,7 @@ class BrushType:
     Pen, Eraser, Smudge = range(3)
         
 class BrushData:
-    def __init__(self, name = "Custom", min_width = 1, max_width=4, min_opacity=0, max_opacity=1, step=1, brush_type = BrushType.Pen):
+    def __init__(self, name = "Custom", min_width = 1, max_width=4, min_opacity=0, max_opacity=1, step=1, smudge_amount=0.5, brush_type = BrushType.Pen):
         self.name = name
         self.min_width = int(min_width)
         self.max_width = int(max_width)
@@ -37,6 +37,7 @@ class BrushData:
         self.max_opacity = max_opacity
         self.brush_type = brush_type
         self.step = step
+        self.smudge_amount = 0.5
         self.populate_originals()
         self.is_original = True
 
@@ -47,10 +48,10 @@ class BrushData:
         return self.min_opacity + (self.max_opacity - self.min_opacity) * pressure
         
     def restore_from_originals(self):
-        self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step = self.originals
+        self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step, self.smudge_amount = self.originals
         
     def populate_originals(self):
-        self.originals = [self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step]
+        self.originals = [self.min_width, self.max_width, self.min_opacity, self.max_opacity, self.brush_type, self.step, self.smudge_amount]
         
     def create_copy(self):
         new_brush_data = copy.copy(self)
