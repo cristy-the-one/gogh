@@ -59,6 +59,8 @@ class BrushManager:
                 brush.max_opacity = float(child_node.getAttribute("max"))                    
             if child_node.localName=='step':
                 brush.step = int(child_node.getAttribute("value"))
+            if child_node.localName=='smudge-amount':
+                brush.smudge_amount = float(child_node.getAttribute("value"))
             if child_node.localName=='type':
                 brush.brush_type = self.brush_types[child_node.childNodes[0].nodeValue]
             if child_node.localName=='default-eraser':
@@ -74,13 +76,16 @@ class BrushManager:
         brush_node.appendChild(xmldoc.createElement('width'))
         brush_node.lastChild.setAttribute('min', str(int(brush.min_width)))
         brush_node.lastChild.setAttribute('max', str(int(brush.max_width)))
-        if brush.min_opacity!=0 or brush.max_opacity!=1:
+        if (brush.min_opacity!=0 or brush.max_opacity!=1) and brush.brush_type != BrushType.Smudge:
             brush_node.appendChild(xmldoc.createElement('opacity'))
             brush_node.lastChild.setAttribute('min', str(brush.min_opacity))
             brush_node.lastChild.setAttribute('max', str(brush.max_opacity))
         if brush.step != 1:
             brush_node.appendChild(xmldoc.createElement('step'))
             brush_node.lastChild.setAttribute('value', str(int(brush.step)))
+        if brush.brush_type == BrushType.Smudge:
+            brush_node.appendChild(xmldoc.createElement('smudge-amount'))
+            brush_node.lastChild.setAttribute('value', str(brush.smudge_amount))
         brush_node.appendChild(xmldoc.createElement('type'))
         brush_node.lastChild.appendChild(xmldoc.createTextNode(self.brush_type_names[brush.brush_type]))
         if self.default_pen_data == brush :
