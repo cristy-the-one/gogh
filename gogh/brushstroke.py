@@ -175,17 +175,17 @@ class SmudgeBrushStroke (AbstractBrushStroke):
     def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
         layer = self.goghdoc.layer_for_key(self.current_layer_key)
         pix_array = layer.pixbuf.get_pixels_array()
-        k = 1
-        kk = 1-k
+        smudge_amt = self.brush_options.smudge_amount
         for x, y in intermediate_coords:
             adj_brush = self.brush_provider.get_adjusted_brush(pressure, x-int(x), y-int(y))
-            brush = zeros((adj_brush.shape[0], adj_brush.shape[1], 1), Float)
+            brush_w, brush_h = adj_brush.shape[0], adj_brush.shape[1]
+            brush = zeros((brush_w, brush_h, 1), Float)
             brush[...,0] = adj_brush[...]
             xt = int(floor(x))-adj_brush.shape[1]//2
             yt = int(floor(y))-adj_brush.shape[0]//2 
             if self.x_prev and self.y_prev:
-                t = pix_array[yt:yt+adj_brush.shape[1], xt:xt+adj_brush.shape[0]]*kk+pix_array[self.y_prev:self.y_prev+adj_brush.shape[1], self.x_prev:self.x_prev+adj_brush.shape[0]]*k
-                pix_array[yt:yt+adj_brush.shape[1], xt:xt+adj_brush.shape[0]] = (minimum(255, 0.5+pix_array[yt:yt+adj_brush.shape[1], xt:xt+adj_brush.shape[0]]*(1-brush)+t*brush)).astype(UInt8)[:,:]
+                t = pix_array[yt:yt+brush_h, xt:xt+brush_w]*(1-smudge_amt)+pix_array[self.y_prev:self.y_prev+brush_h, self.x_prev:self.x_prev+brush_w]*smudge_amt
+                pix_array[yt:yt+brush_h, xt:xt+brush_w] = (minimum(255, 0.5+pix_array[yt:yt+brush_h, xt:xt+brush_w]*(1-brush)+t*brush)).astype(UInt8)[:,:]
             self.x_prev, self.y_prev = xt, yt
         self.goghdoc.combine_layers(self.bounding_rectangle.x, self.bounding_rectangle.y, self.bounding_rectangle.width, self.bounding_rectangle.height)
       
