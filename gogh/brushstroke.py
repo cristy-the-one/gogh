@@ -170,6 +170,10 @@ class SmudgeBrushStroke (AbstractBrushStroke):
         self.bounding_rectangle = None
         self.brush_provider = BrushProvider(brush_options)  
         self.x_prev, self.y_prev = None, None
+        
+    def trim_to_fit(self, x1, x2, w):        
+        return (max(x1, 0), min(x2, w))
+
       
         
     def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
@@ -184,8 +188,13 @@ class SmudgeBrushStroke (AbstractBrushStroke):
             xt = int(floor(x))-adj_brush.shape[1]//2
             yt = int(floor(y))-adj_brush.shape[0]//2 
             if self.x_prev and self.y_prev:
-                t = pix_array[yt:yt+brush_h, xt:xt+brush_w]*(1-smudge_amt)+pix_array[self.y_prev:self.y_prev+brush_h, self.x_prev:self.x_prev+brush_w]*smudge_amt
-                pix_array[yt:yt+brush_h, xt:xt+brush_w] = (minimum(255, 0.5+pix_array[yt:yt+brush_h, xt:xt+brush_w]*(1-brush)+t*brush)).astype(UInt8)[:,:]
+                x_ofs, y_ofs = min(self.x_prev, xt, 0), min(self.y_prev, yt, 0)
+                x_ofs2 = max(xt+brush_w, self.x_prev+brush_w, self.goghdoc.width)-self.goghdoc.width
+                y_ofs2 = max(yt+brush_w, self.y_prev+brush_h, self.goghdoc.height)-self.goghdoc.height
+                if (x_ofs2-x_ofs<brush_w) and (y_ofs2-y_ofs<brush_h):
+                    brush_fragment = brush[-y_ofs:brush_h-y_ofs2,-x_ofs:brush_w-x_ofs2]
+                    t = pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-smudge_amt)+pix_array[self.y_prev-y_ofs:self.y_prev+brush_h-y_ofs2, self.x_prev-x_ofs:self.x_prev+brush_w-x_ofs2]*smudge_amt
+                    pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2] = (minimum(255, 0.5+pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-brush_fragment)+t*brush_fragment)).astype(UInt8)[:,:]
             self.x_prev, self.y_prev = xt, yt
         self.goghdoc.combine_layers(self.bounding_rectangle.x, self.bounding_rectangle.y, self.bounding_rectangle.width, self.bounding_rectangle.height)
       
