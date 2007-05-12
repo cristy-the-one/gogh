@@ -1,6 +1,7 @@
 include *.py
 include glade/*.glade
 include glade/*.png
+include glade/*.svg
 include README
 include COPYING
 include brushlist.xml
