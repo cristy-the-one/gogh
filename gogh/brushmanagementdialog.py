@@ -69,14 +69,13 @@ class BrushManagementDialog(GoghToolDialog):
         self.brush_type_combobox.add_attribute(combo_cell, 'text', 1)
         self.brush_controls = []
         
+        self.brush_manager.brush_selection_observer.add_callback(self.change_selected_brush) 
+        
         
     def show(self):
         self.create_controls_for_brush_type(self.brush_manager.active_brush_data.brush_type)
         GoghToolDialog.show(self)
-        row = self.get_row_for_brush(self.brush_manager.active_brush_data)
-        if row:
-            self.treeview.expand_to_path(row.path)
-            self.treeview.set_cursor(row.path, self.treeview.get_column(0))
+        self.set_selected_brush(self.brush_manager.active_brush_data)
     
     def remove_all_brush_control(self):
         for child_control in self.left_vbox.get_children():
@@ -87,6 +86,15 @@ class BrushManagementDialog(GoghToolDialog):
     def set_brush_data_for_all_brush_controls(self, brush_data):
         for brush_control in self.brush_controls:
             brush_control.set_brush_data(brush_data)
+            
+    def change_selected_brush(self):
+        self.set_selected_brush(self.brush_manager.active_brush_data)
+            
+    def set_selected_brush(self, brush_data):
+        row = self.get_row_for_brush(brush_data)
+        if row:
+            self.treeview.expand_to_path(row.path)
+            self.treeview.set_cursor(row.path, self.treeview.get_column(0))
        
         
     def create_controls_for_brush_type(self, brush_type):
@@ -190,6 +198,7 @@ class BrushManagementDialog(GoghToolDialog):
                     self.treeview.set_cursor( path, self.treeview.get_column(0), 0)
                     self.delete_brush_menu_item.set_sensitive(self.treestore[path][2])
                     self.rename_brush_menu_item.set_sensitive(self.treestore[path][2])
+                    self.brush_list_menu.show_all()
                     self.brush_list_menu.popup( None, None, None, data.button, data.time)
                 
     def on_delete1_activate(self, widget, data=None): 
