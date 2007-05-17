@@ -1,7 +1,7 @@
 # scaledialog.py
 # This file is part of Gogh Project
 #
-# Copyright (C) 2005, 2006, Aleksey Y. Nelipa
+# Copyright (C) 2005-2007, Aleksey Y. Nelipa
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import gtk.glade
 from command import ScaleAction
 
 from goghutil import get_abspath
+import goghglobals
 
 class ScaleDialog:
     def __init__(self):
@@ -47,6 +48,7 @@ class ScaleDialog:
         
       
     def show(self):
+        self.dialog.set_transient_for(goghglobals.gogh_main_window)
         self.scale_type_combobox.set_active(0)
         self.proportional_scale_checkbutton.set_active(True)
         self.width_spin.set_value(self.goghdoc.width)

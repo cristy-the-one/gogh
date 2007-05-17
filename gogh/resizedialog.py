@@ -1,7 +1,7 @@
 # resizedialog.py
 # This file is part of Gogh Project
 #
-# Copyright (C) 2005, 2006, Aleksey Y. Nelipa
+# Copyright (C) 2005-2007, Aleksey Y. Nelipa
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ from goghutil import get_abspath
 
 from command import ResizeAction
 
+import goghglobals
+
 class ResizeDialog:
     def __init__(self):
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="resize_document_dialog")
@@ -50,6 +52,7 @@ class ResizeDialog:
             spin.set_value(0)        
         
     def show(self):
+        self.dialog.set_transient_for(goghglobals.gogh_main_window)
         self.reset_spins()
         response = self.dialog.run()
         if response == gtk.RESPONSE_OK :

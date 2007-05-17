@@ -1,7 +1,7 @@
 # colordialog.py
 # This file is part of Gogh Project
 #
-# Copyright (C) 2005, 2006, Aleksey Y. Nelipa
+# Copyright (C) 2005-2007, Aleksey Y. Nelipa
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ from goghtooldialog import GoghToolDialog
 class ColorDialog(GoghToolDialog):
     def __init__(self):
         self.dialog = gtk.ColorSelectionDialog("Select Color")
+        self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.dialog.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_UTILITY)
         self.dialog.colorsel.set_current_color(gtk.gdk.Color(0))                     
         self.dialog.connect("delete-event", self.on_dialog_delete_event)
