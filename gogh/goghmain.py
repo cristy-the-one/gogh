@@ -1,7 +1,7 @@
 # goghmain.py
 # This file is part of Gogh Project
 #
-# Copyright (C) 2005, 2006, Aleksey Y. Nelipa
+# Copyright (C) 2005-2007, Aleksey Y. Nelipa
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import gtk.gdk
 import gtk.glade
 import math
 import time
+import sys
 import gnome.ui
 import cPickle as pickle
 from Numeric import *
@@ -42,10 +43,10 @@ from colordialog import ColorDialog
 from brushmanagementdialog import BrushManagementDialog
 from goghutil import *
 from command import *
-
+import goghglobals
 
 APPNAME='Gogh'
-APPVERSION='0.0.1.070127'
+APPVERSION='0.1.0'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
@@ -230,22 +231,44 @@ class GoghWindow:
         open_dialog = gtk.FileChooserDialog("Open", self.editor_window, gtk.FILE_CHOOSER_ACTION_OPEN, open_dialog_buttons)
         open_dialog.add_filter(self.gogh_filter)
         open_dialog.add_filter(self.image_file_filter)
-        #open_dialog.add_filter(self.all_files_filter)
+        open_dialog.add_filter(self.all_files_filter)
         response = open_dialog.run()
         if response in (gtk.RESPONSE_CANCEL, gtk.RESPONSE_DELETE_EVENT):
             open_dialog.destroy()
             return
         filename = open_dialog.get_filename()
         if open_dialog.get_filter()==self.gogh_filter :
-            f = open(filename, "rb")
-            goghdoc = pickle.load(f)
-            f.close()
-            self.load_document(goghdoc)
-            self.current_filename = filename
+            self.load_document_from_gogh_file(filename)
         if open_dialog.get_filter()==self.image_file_filter:
-            goghdoc = GoghDoc(pixbuf = gtk.gdk.pixbuf_new_from_file(filename))
-            self.load_document(goghdoc)
+            self.load_document_from_image_file(filename)
+        if open_dialog.get_filter()==self.all_files_filter:
+            self.load_document_from_unknown_file(filename)
+                
         open_dialog.destroy()
+        
+        
+    def load_document_from_gogh_file(self, filename):
+        f = open(filename, "rb")
+        goghdoc = pickle.load(f)
+        f.close()
+        self.load_document(goghdoc)
+        self.current_filename = filename
+        
+    def load_document_from_image_file(self, filename):
+        pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
+        pixbuf = pixbuf.add_alpha(False, chr(255), chr(255), chr(255))
+        goghdoc = GoghDoc(pixbuf = pixbuf)
+        self.load_document(goghdoc)
+        
+        
+    def load_document_from_unknown_file(self, filename):
+        try: self.load_document_from_gogh_file(filename)
+        except:
+            try: 
+                self.load_document_from_image_file(filename)
+            except: 
+                print 'Could not open file: ', filename
+        
         
     def on_save1_activate(self, widget, data=None): 
         if not self.goghdoc.has_name() :
@@ -258,11 +281,15 @@ class GoghWindow:
         self.launch_save_dialog("Save As")      
         self.reset_window_title()
        
-        
     def launch_save_dialog(self, dialog_title):     
         save_dialog = SaveDialog(self.goghdoc)      
         save_dialog.show()
            
+    def on_about1_activate(self, widget, data=None): 
+        self.about_dialog.run()
+        self.about_dialog.hide()
+        
+       
        
     def on_gogh_drawing_window_key_press_event(self, widget, data=None): 
         if data.keyval==0xFFE1 :
@@ -327,11 +354,16 @@ class GoghWindow:
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="gogh_drawing_window")
         xml.signal_autoconnect(self)    
         
+        xml_about = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="gogh_about_dialog")
+        self.about_dialog = xml_about.get_widget("gogh_about_dialog")
+        self.about_dialog.set_name(APPNAME)
+        self.about_dialog.set_version(APPVERSION)
        
         self.draw_area = xml.get_widget("drawing_area")
         self.drawable = self.draw_area.window
         self.drawarea_viewport = xml.get_widget("drawarea_viewport")
         self.editor_window = xml.get_widget("gogh_drawing_window")
+        goghglobals.gogh_main_window = self.editor_window
 
         self.drawarea_scrolled_window = xml.get_widget("drawarea_scrolled_window")       
        
@@ -384,6 +416,9 @@ class GoghWindow:
         self.all_files_filter = gtk.FileFilter()
         self.all_files_filter.set_name("All files")
         self.all_files_filter.add_pattern("*")
+        
+        if len(sys.argv)>1 :
+            self.load_document_from_unknown_file(sys.argv[1])
         
         
     def reset_cursor(self):
