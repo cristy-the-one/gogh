@@ -1,7 +1,7 @@
 # settingmanager.py
 # This file is part of Gogh Project
 #
-# Copyright (C) 2005, 2006, Aleksey Y. Nelipa
+# Copyright (C) 2005-2007, Aleksey Y. Nelipa
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
