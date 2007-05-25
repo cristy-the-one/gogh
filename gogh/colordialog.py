@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -29,13 +29,13 @@ class ColorDialog(GoghToolDialog):
         self.dialog = gtk.ColorSelectionDialog("Select Color")
         self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.dialog.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_UTILITY)
-        self.dialog.colorsel.set_current_color(gtk.gdk.Color(0))                     
+        self.dialog.colorsel.set_current_color(gtk.gdk.Color(0))
         self.dialog.connect("delete-event", self.on_dialog_delete_event)
         self.colorsel = self.dialog.colorsel
         self.dialog.ok_button.hide()
         self.dialog.cancel_button.hide()
         self.check_menu_item = None
-    
-    def on_dialog_delete_event(self, widget, data=None): 
+
+    def on_dialog_delete_event(self, widget, data=None):
         self.hide()
         return True

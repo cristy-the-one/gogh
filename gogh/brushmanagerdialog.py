@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -30,17 +30,17 @@ from goghutil import *
 class BrushManagementDialog(GoghToolDialog):
     def __init__(self):
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_management_form")
-        xml.signal_autoconnect(self)  
+        xml.signal_autoconnect(self)
         self.dialog = xml.get_widget("brush_management_form")
         self.brush_list_treeview = xml.get_widget("brush_list_treeview")
-        
+
         self.treestore = gtk.TreeStore(str)
         for parent in range(4):
             piter = self.treestore.append(None, ['parent %i' % parent])
             for child in range(3):
                 self.treestore.append(piter, ['child %i of parent %i' % (child, parent)])
         self.brush_list_treeview.set_model(self.treestore)
-        
+
         self.column = gtk.TreeViewColumn('Column 0')
         self.brush_list_treeview.append_column(self.column)
         self.cell = gtk.CellRendererText()

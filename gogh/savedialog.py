@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -31,19 +31,19 @@ class SaveDialog:
         self.extensions = { 0 : 'gogh', 1 : 'png', 2 : 'jpeg' }
         self.goghdoc = goghdoc
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="save_as_dialog")
-        xml.signal_connect("on_file_type_combo_changed",self.on_file_type_combo_changed)  
+        xml.signal_connect("on_file_type_combo_changed",self.on_file_type_combo_changed)
         self.save_dialog = xml.get_widget("save_as_dialog")
         self.save_dialog.set_current_name(replace_extension(self.goghdoc.document_name, self.extensions[0]))
         self.file_type_combo = xml.get_widget("file_type_combo")
         self.file_type_combo.set_active(0)
-        
-    def on_file_type_combo_changed(self, widget, data=None): 
+
+    def on_file_type_combo_changed(self, widget, data=None):
         if not self.save_dialog.get_filename():
             return
         filename = os.path.split(self.save_dialog.get_filename())[1]
         s = replace_extension(filename, self.get_extension())
         self.save_dialog.set_current_name(s)
-        
+
     def save_current_document(self, format, filename):
         if format=='GOGH':
             self.goghdoc.document_name = filename
@@ -52,10 +52,10 @@ class SaveDialog:
             self.goghdoc.composite.save(filename, 'png')
         if format=='JPEG':
             self.goghdoc.composite.save(filename, 'jpeg')
-            
+
     def get_save_format(self):
         return self.formats[self.file_type_combo.get_active()]
-        
+
     def get_extension(self):
         return self.extensions[self.file_type_combo.get_active()]
 
@@ -63,6 +63,6 @@ class SaveDialog:
         response = self.save_dialog.run()
         if response == gtk.RESPONSE_OK:
             self.save_current_document(self.get_save_format(), self.save_dialog.get_filename())
-        self.save_dialog.destroy()      
-        
+        self.save_dialog.destroy()
+
 

@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -23,14 +23,14 @@ from __future__ import division
 class Observer:
     def __init__(self):
         self.callbacks = []
-    
+
     def add_callback(self, callback):
         self.callbacks.append(callback)
-        
+
     def remove_callback(self, callback):
         if callback in self.callbacks:
             self.callbacks.remove(callback)
-            
+
     def notify_all(self, *params):
         for callback in self.callbacks:
             callback(*params)

@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -33,7 +33,7 @@ class BrushGroup:
     def __init__(self, name):
         self.brushes = []
         self.name = name
-        
+
 
 class BrushManager:
     def __init__(self):
@@ -47,7 +47,7 @@ class BrushManager:
         self.select_menu_item_for_active_brush_data()
         self.eraser_mode = False
         self.brush_selection_observer = Observer()
-        
+
     def construct_brush_from_node(self, brush_node):
         brush = BrushData(brush_node.getAttribute("name"))
         for child_node in brush_node.childNodes:
@@ -56,7 +56,7 @@ class BrushManager:
                 brush.max_width = int(child_node.getAttribute("max"))
             if child_node.localName=='opacity':
                 brush.min_opacity = float(child_node.getAttribute("min"))
-                brush.max_opacity = float(child_node.getAttribute("max"))                    
+                brush.max_opacity = float(child_node.getAttribute("max"))
             if child_node.localName=='step':
                 brush.step = int(child_node.getAttribute("value"))
             if child_node.localName=='smudge-amount':
@@ -68,8 +68,8 @@ class BrushManager:
             if child_node.localName=='default-pen':
                 self.default_pen_data = brush
         brush.populate_originals()
-        return brush        
-            
+        return brush
+
     def construct_node_from_brush(self, brush, xmldoc):
         brush_node = xmldoc.createElement('brush')
         brush_node.setAttribute('name', brush.name)
@@ -92,28 +92,28 @@ class BrushManager:
             brush_node.appendChild(xmldoc.createElement('default-pen'))
         if self.default_eraser_data == brush :
             brush_node.appendChild(xmldoc.createElement('default-eraser'))
-        return brush_node        
-                
+        return brush_node
+
     def init_brush_list(self):
         original_doc, custom_doc = load_original_brush_list_xmldoc(), load_custom_brush_list_xmldoc()
         self.brush_groups = []
         self.load_brushes_from_document(original_doc, True)
         if custom_doc:
             self.load_brushes_from_document(custom_doc, False)
-                    
+
     def load_brushes_from_document(self, doc, is_original):
         for group_node in doc.getElementsByTagName("brushgroup"):
             group_name = group_node.getAttribute("name")
             group = find_item(self.brush_groups, lambda g : g.name == group_name)
             if not group:
                 group = BrushGroup(group_node.getAttribute("name"))
-                self.brush_groups.append(group)        
+                self.brush_groups.append(group)
             for brush_node in group_node.getElementsByTagName("brush"):
                 brush = self.construct_brush_from_node(brush_node)
                 brush.is_original = is_original
                 group.brushes.append(brush)
-       
-            
+
+
     def save_brush_list(self):
         doc = xml.dom.minidom.Document()
         root_node = doc.createElement('brushes')
@@ -127,7 +127,7 @@ class BrushManager:
                     group_node.appendChild(brush_node)
             root_node.appendChild(group_node)
         save_brush_list_xmldoc(doc)
-        
+
     def init_brush_menu(self):
         self.brush_menu = gtk.Menu()
         self.brush_menu.connect("selection-done", self.selection_done)
@@ -142,8 +142,8 @@ class BrushManager:
                 self.brush_menu.append(item)
         self.brush_menu.append(gtk.SeparatorMenuItem())
         self.brush_menu.show_all()
-        
-    def selection_done(self, widget, data=None): 
+
+    def selection_done(self, widget, data=None):
         for brush_data, item in self.items_for_brushes.iteritems():
             if item.get_active():
                 self.active_brush_data = brush_data
@@ -151,7 +151,7 @@ class BrushManager:
                 self.assign_current_brushes()
                 self.select_menu_item_for_active_brush_data()
                 return
-        
+
     def select_eraser(self):
         self.eraser_mode = True
         if self.active_brush_data!=self.current_eraser_data :
@@ -160,7 +160,7 @@ class BrushManager:
             self.brush_selection_observer.notify_all()
             self.select_menu_item_for_active_brush_data()
 
-         
+
     def unselect_eraser(self):
         self.eraser_mode = False
         if self.active_brush_data!=self.current_pen_data :
@@ -168,51 +168,51 @@ class BrushManager:
             self.active_brush_data = self.current_pen_data
             self.brush_selection_observer.notify_all()
             self.select_menu_item_for_active_brush_data()
-            
+
     def select_menu_item_for_active_brush_data(self):
         item = self.items_for_brushes[self.active_brush_data]
         self.brush_menu.select_item(item)
         item.set_active(True)
-        
+
     def assign_current_brushes(self):
         if self.eraser_mode :
             self.current_eraser_data = self.active_brush_data
         else :
             self.current_pen_data = self.active_brush_data
-        
-        
+
+
     def on_brush_name_changed(self, brush_data) :
         self.items_for_brushes[brush_data].child.set_text(brush_data.name)
-        
+
     def group_for_brush(self, brush_data):
         return find_item(self.brush_groups, lambda g : brush_data in g.brushes)
-        
+
     def add_brush(self, brush_group, brush_data):
         brush_group.brushes.append(brush_data)
         new_item = gtk.RadioMenuItem(self.menu_item_group, brush_data.name)
         self.items_for_brushes[brush_data] = new_item
         self.brush_menu.append(new_item)
         self.brush_menu.show_all()
-        
+
     def remove_brush(self, brush_data):
         brush_group = self.group_for_brush(brush_data)
         brush_group.brushes.remove(brush_data)
         self.brush_menu.remove(self.items_for_brushes[brush_data])
         del self.items_for_brushes[brush_data]
         self.brush_menu.show_all()
-        
+
     def select_brush(self, brush_data):
         if self.active_brush_data!=brush_data :
             self.active_brush_data = brush_data
             self.brush_selection_observer.notify_all()
             self.assign_current_brushes()
             self.select_menu_item_for_active_brush_data()
-        
-       
-      
-           
-        
-        
-    
 
-        
+
+
+
+
+
+
+
+

@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -33,32 +33,32 @@ def load_custom_brush_list_xmldoc():
     if os.path.exists(custom_path):
         return xml.dom.minidom.parse(custom_path)
     return None
-    
+
 def load_original_brush_list_xmldoc():
     return xml.dom.minidom.parse(get_abspath("brushlist.xml"))
     custom_path = os.path.join(get_settings_path() ,'custom_brushlist.xml')
-    
+
 def create_settings_directory():
     path = os.path.join(get_settings_path())
     if not os.path.exists(path):
         os.mkdir(path)
-        
+
 def get_settings_path():
     return os.path.join(os.path.expanduser('~'),'.gogh')
-        
-        
+
+
 def save_brush_list_xmldoc(doc):
     try:
         save_path = os.path.join(get_settings_path(), 'custom_brushlist.xml')
-        create_settings_directory()    
+        create_settings_directory()
         f = open(save_path, "w")
         xml.dom.ext.PrettyPrint(doc, f)
         f.close()
     except:
         print 'Cannot save custom brush list'
-        
-
-   
 
 
-    
+
+
+
+

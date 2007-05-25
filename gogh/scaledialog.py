@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, 
+# Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA 02111-1307, USA.
 
 from __future__ import division
@@ -32,7 +32,7 @@ import goghglobals
 class ScaleDialog:
     def __init__(self):
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="scale_document_dialog")
-        xml.signal_autoconnect(self)  
+        xml.signal_autoconnect(self)
         self.suspend_width_spin_change = False
         self.suspend_height_spin_change = False
         self.goghdoc = None
@@ -45,8 +45,8 @@ class ScaleDialog:
 
     def set_document(self, goghdoc):
         self.goghdoc = goghdoc
-        
-      
+
+
     def show(self):
         self.dialog.set_transient_for(goghglobals.gogh_main_window)
         self.scale_type_combobox.set_active(0)
@@ -58,9 +58,9 @@ class ScaleDialog:
             self.scale_document()
             self.dialog.hide()
         if response == gtk.RESPONSE_CANCEL :
-            self.dialog.hide()   
+            self.dialog.hide()
 
-        
+
     def scale_document(self):
         if self.scale_type_combobox.get_active() == 0 :
             w = self.width_spin.get_value_as_int()
@@ -69,13 +69,13 @@ class ScaleDialog:
             w = self.width_spin.get_value_as_int()*self.goghdoc.width//100
             h = self.height_spin.get_value_as_int()*self.goghdoc.height//100
         scale_action = ScaleAction(self.goghdoc, w, h)
-        self.goghdoc.command_stack.add(scale_action)        
-       
-       
+        self.goghdoc.command_stack.add(scale_action)
+
+
     def on_scale_document_dialog_delete_event(self, widget, data=None):
         self.dialog.hide()
         return True
-        
+
     def on_width_spin_changed(self, widget, data=None):
         if  self.width_spin.get_text() == "" or self.width_spin.get_text().startswith('0'):
             return
@@ -90,7 +90,7 @@ class ScaleDialog:
                 self.suspend_width_spin_change = True
                 self.height_spin.set_value(h)
                 self.suspend_width_spin_change = False
-       
+
     def on_height_spin_changed(self, widget, data=None):
         if self.height_spin.get_text() == "" or self.height_spin.get_text().startswith('0'):
             return
@@ -100,18 +100,18 @@ class ScaleDialog:
             if self.scale_type_combobox.get_active() == 0 :
                 w = int(round(self.goghdoc.width*h/self.goghdoc.height))
             else :
-                w = h  
+                w = h
             if w != self.width_spin.get_value_as_int() :
                 self.suspend_height_spin_change = True
                 self.width_spin.set_value(w)
                 self.suspend_height_spin_change = False
-        
+
     def on_proportional_scale_checkbutton_toggled(self, widget, data=None):
         pass
-    
+
     def on_scale_type_combobox_changed(self, widget, data=None):
         if not self.goghdoc:
-            return 
+            return
         if self.scale_type_combobox.get_active() == 0 :
             w_pixels = self.width_spin.get_value_as_int()*self.goghdoc.width//100
             h_pixels = self.height_spin.get_value_as_int()*self.goghdoc.height//100
