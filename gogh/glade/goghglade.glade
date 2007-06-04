@@ -917,8 +917,8 @@
     <property name="visible">True</property>
     <property name="modal">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
+    <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>
@@ -1022,6 +1022,56 @@ JPEG image</property>
               </widget>
               <packing>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolbar" id="toolbar2">
+                <property name="visible">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="toolbar_style">GTK_TOOLBAR_BOTH_HORIZ</property>
+                <property name="icon_size">GTK_ICON_SIZE_MENU</property>
+                <property name="icon_size_set">True</property>
+                <child>
+                  <widget class="GtkToolButton" id="copy_brush_button">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="tooltip" translatable="yes">Copy Brush</property>
+                    <property name="stock_id">gtk-copy</property>
+                    <signal name="clicked" handler="on_copy1_activate"/>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkToolButton" id="delete_brush_button">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="tooltip" translatable="yes">Delete Brush</property>
+                    <property name="stock_id">gtk-delete</property>
+                    <signal name="clicked" handler="on_delete1_activate"/>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkToolButton" id="rename_brush_button">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="tooltip" translatable="yes">Rename Brush</property>
+                    <property name="label">Rename</property>
+                    <property name="stock_id">gtk-edit</property>
+                    <signal name="clicked" handler="on_rename1_activate"/>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </widget>
@@ -1229,24 +1279,23 @@ JPEG image</property>
     <child>
       <widget class="GtkImageMenuItem" id="delete_brush_menu_item">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Delete</property>
+        <property name="label" translatable="yes">gtk-delete</property>
         <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
         <signal name="activate" handler="on_delete1_activate"/>
-        <child internal-child="image">
-          <widget class="GtkImage" id="image4">
-            <property name="visible">True</property>
-            <property name="stock">gtk-delete</property>
-            <property name="icon_size">1</property>
-          </widget>
-        </child>
       </widget>
     </child>
     <child>
-      <widget class="GtkMenuItem" id="rename_brush_menu_item">
+      <widget class="GtkImageMenuItem" id="rename_brush_menu_item">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Rename</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_rename1_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="menu-item-image2">
+            <property name="stock">gtk-edit</property>
+          </widget>
+        </child>
       </widget>
     </child>
   </widget>

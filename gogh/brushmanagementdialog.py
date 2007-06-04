@@ -47,6 +47,10 @@ class BrushManagementDialog(GoghToolDialog):
 
         self.brush_type_combobox = xml.get_widget("brush_type_combobox")
 
+        self.copy_brush_button = xml.get_widget("copy_brush_button")
+        self.rename_brush_button = xml.get_widget("rename_brush_button")
+        self.delete_brush_button = xml.get_widget("delete_brush_button")
+
         self.left_vbox = xml.get_widget("left_vbox")
         self.right_vbox = xml.get_widget("right_vbox")
 
@@ -181,6 +185,9 @@ class BrushManagementDialog(GoghToolDialog):
         else:
             self.set_controls_for_brush(brush_data)
             self.brush_manager.select_brush(brush_data)
+        self.copy_brush_button.set_sensitive(brush_data!=None)
+        self.delete_brush_button.set_sensitive(self.is_brush_at_path_editable(self.current_path()))
+        self.rename_brush_button.set_sensitive(self.is_brush_at_path_editable(self.current_path()))
 
 
     def on_brush_management_form_delete_event(self, widget, data=None):
@@ -196,10 +203,13 @@ class BrushManagementDialog(GoghToolDialog):
                 if brush_data:
                     self.treeview.grab_focus()
                     self.treeview.set_cursor( path, self.treeview.get_column(0), 0)
-                    self.delete_brush_menu_item.set_sensitive(self.treestore[path][2])
-                    self.rename_brush_menu_item.set_sensitive(self.treestore[path][2])
+                    self.delete_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
+                    self.rename_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
                     self.brush_list_menu.show_all()
                     self.brush_list_menu.popup( None, None, None, data.button, data.time)
+
+    def is_brush_at_path_editable(self, path):
+        return self.treestore[path][2]
 
     def on_delete1_activate(self, widget, data=None):
         current_iter = self.treestore.get_iter(self.current_path())
