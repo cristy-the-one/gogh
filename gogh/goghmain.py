@@ -133,15 +133,13 @@ class GoghWindow:
 
     def on_drawing_area_expose_event(self, widget, data=None):
         area = data.area
-        #self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, area.x, area.y, area.x, area.y, area.width, area.height)
         h_adj, v_adj = self.drawarea_scrolled_window.get_hadjustment(), self.drawarea_scrolled_window.get_vadjustment()
         x = int(h_adj.get_value())
         y = int(v_adj.get_value())
         w = int(h_adj.page_size)
         h = int(v_adj.page_size)
         self.reposition_view()
-        self.goghview.reset_view_pixbuf()
-        self.drawable.draw_pixbuf(self.drawable.new_gc(), self.goghview.pixbuf0, 0, 0, x, y, -1, -1)
+        self.goghview.redraw_image()
 
 
     def on_undo1_activate(self, widget, data=None):
