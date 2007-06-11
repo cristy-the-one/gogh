@@ -205,7 +205,7 @@ class BrushManagementDialog(GoghToolDialog):
                     self.treeview.set_cursor( path, self.treeview.get_column(0), 0)
                     self.delete_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
                     self.rename_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
-                    self.brush_list_menu.show_all()
+                    self.brush_list_menu.show_now()
                     self.brush_list_menu.popup( None, None, None, data.button, data.time)
 
     def is_brush_at_path_editable(self, path):
