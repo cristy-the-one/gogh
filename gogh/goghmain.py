@@ -45,7 +45,7 @@ from goghutil import *
 from command import *
 import goghglobals
 
-APPNAME='Gogh'
+APPNAME='gogh'
 APPVERSION='0.1.0'
 
 def enable_devices():
@@ -92,14 +92,22 @@ class GoghWindow:
 
 
     def on_eventbox_motion_notify_event(self, widget, data=None):
+        x, y = data.get_coords()
+        x, y = self.goghview.to_model(x, y)
+        self.goghview.set_cursor(x, y, self.brush_manager.active_brush_data)
         if self.is_pressed :
-            x, y = data.get_coords()
-            x, y = self.goghview.to_model(x, y)
+            #x, y = data.get_coords()
+            #x, y = self.goghview.to_model(x, y)
             self.brush_stroke.draw_to(x, y, get_pressure(data))
         if data.device.source==gtk.gdk.SOURCE_ERASER:
             self.brush_manager.select_eraser()
         else:
             self.brush_manager.unselect_eraser()
+        self.goghview.redraw_image_for_cursor()
+
+    def on_eventbox_leave_notify_event(self, widget, data=None):
+        self.goghview.set_no_cursor()
+        self.goghview.redraw_image_for_cursor()
 
     def on_eventbox_button_press_event(self, widget, data=None):
         x, y = data.get_coords()
@@ -420,22 +428,25 @@ class GoghWindow:
 
 
     def reset_cursor(self):
-        brush_data = self.brush_manager.active_brush_data
-        w1, w2 = [int(round(w*self.goghview.zoom_factor)) | 1 for w in (brush_data.min_width, brush_data.max_width)]
-        d = max(w1, w2)
-        pm = gtk.gdk.Pixmap(None, d+1, d+1,1)
-        colormap = gtk.gdk.colormap_get_system()
-        black = colormap.alloc_color('black')
-        white = colormap.alloc_color('white')
-        bgc = pm.new_gc(foreground=black)
-        wgc = pm.new_gc(foreground=white)
+        #w1, w2 = self.get_cursor_size_range()
+        #d = max(w1, w2)
+        #pm = gtk.gdk.Pixmap(None, d+1, d+1,1)
+        #colormap = gtk.gdk.colormap_get_system()
+        #black = colormap.alloc_color('black')
+        #white = colormap.alloc_color('white')
+        #bgc = pm.new_gc(foreground=black)
+        #wgc = pm.new_gc(foreground=white)
 
-        pm.draw_rectangle(bgc,True,0,0,d+1,d+1)
+        #pm.draw_rectangle(bgc,True,0,0,d+1,d+1)
 
-        pm.draw_arc(wgc,False, (d-w1)//2, (d-w1)//2, w1, w1, 0, 360*64)
-        pm.draw_arc(wgc,False, (d-w2)//2, (d-w2)//2, w2, w2, 0, 360*64)
+        #pm.draw_arc(wgc,False, (d-w1)//2, (d-w1)//2, w1, w1, 0, 360*64)
+        #pm.draw_arc(wgc,False, (d-w2)//2, (d-w2)//2, w2, w2, 0, 360*64)
+        pixmap = gtk.gdk.Pixmap(None, 1, 1, 1)
+        color = gtk.gdk.Color()
+        cursor = gtk.gdk.Cursor(pixmap, pixmap, color, color, 0, 0)
 
-        self.drawable.set_cursor(gtk.gdk.Cursor(pm,pm,gtk.gdk.color_parse('black'), gtk.gdk.color_parse('white'),d//2,d//2))
+        #self.drawable.set_cursor(gtk.gdk.Cursor(pm,pm,gtk.gdk.color_parse('black'), gtk.gdk.color_parse('white'),d//2,d//2))
+        self.drawable.set_cursor(cursor)
 
     def main(self):
         gtk.main()

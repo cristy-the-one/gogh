@@ -108,10 +108,9 @@ class AbstractBrushStroke:
         self.expand_bounding_rectangle(self.dab_rect_coords.get_rectangle())
         self.apply_brush_stroke(self.last_x, self.last_y, x, y, intermediate_coords, pressure)
 
-        if self.bounding_rectangle :
-            x_r, y_r, w_r, h_r = rect_to_list(self.bounding_rectangle)
-            self.goghview.update_view_pixbuf(x_r, y_r, w_r, h_r)
-            self.goghview.redraw_image_fragment_for_model_coord(x_r, y_r, w_r, h_r)
+        x_r, y_r, w_r, h_r = rect_to_list(self.dab_rect_coords.get_rectangle())
+        self.goghview.update_view_pixbuf(x_r, y_r, w_r, h_r)
+        self.goghview.redraw_image_fragment_for_model_coord(x_r, y_r, w_r, h_r)
 
         if len(intermediate_points)>0 :
             self.offset = self.brush_options.step-(h-intermediate_points[-1])
@@ -197,6 +196,3 @@ class SmudgeBrushStroke (AbstractBrushStroke):
                     pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2] = (minimum(255, 0.5+pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-brush_fragment)+t*brush_fragment)).astype(UInt8)[:,:]
             self.x_prev, self.y_prev = xt, yt
         self.goghdoc.combine_layers(self.bounding_rectangle.x, self.bounding_rectangle.y, self.bounding_rectangle.width, self.bounding_rectangle.height)
-
-
-

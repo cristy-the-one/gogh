@@ -92,6 +92,18 @@ def rect_to_list(r):
 def rect_from_list(r):
     return gtk.gdk.Rectangle(r[0], r[1], r[2], r[3])
 
+def rect_from_float_list(r):
+    x1, y1 = [int(floor(t)) for t in r[0:2]]
+    x2, y2 = [int(ceil(t)) for t in [r[0]+r[2], r[1]+r[3]]]
+    return gtk.gdk.Rectangle(x1, y1, x2-x1, y2-y1)
+
+def rect_union(r1, r2):
+    if r1 and r2:
+        return r1.union(r2)
+    if r1 :
+        return r1
+    return r2
+
 def inverse_dictionary(dictionary):
     inv_dict = {}
     for key in dictionary:

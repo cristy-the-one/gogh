@@ -39,6 +39,9 @@ class GoghView:
         self.goghdoc.pixbuf_observer.add_callback(self.refresh_area)
         self.gc = self.drawable.new_gc()
         self.top_level_gc = self.drawable.new_gc(function=gtk.gdk.INVERT)
+        self.show_cursor = False
+        self.xcur, self.ycur, self.brush_min_width, self.brush_max_width = 0, 0, 0, 0
+        self.xcur_old, self.ycur_old = None, None
 
 
     def get_size(self):
@@ -107,20 +110,38 @@ class GoghView:
         return x*self.zoom_factor, y*self.zoom_factor
 
     def redraw_image_fragment_for_model_coord(self, x, y, w, h):
+        xv, yv, wv, hv = self.to_view_rect(x, y, w, h)
         if self.zoom_factor==1:
-            self.drawable.draw_pixbuf(self.gc, self.goghdoc.composite, x, y, x, y, w, h)
-            self.draw_top_level_items(x, y, w, h)
+            self.drawable.draw_pixbuf(self.gc, self.goghdoc.composite, xv, yv, xv, yv, wv, hv)
+            self.draw_top_level_items(xv, yv, wv, hv)
         else:
-            xv, yv, wv, hv = self.to_view_rect(x, y, w, h)
+            xv, yv, wv, hv = xv-1, yv-1, wv+2, hv+2
             w_ofs, h_ofs = min(xv-self.x_visible, 0), min(yv-self.y_visible, 0)
             self.drawable.draw_pixbuf(self.gc, self.viewpixbuf, xv-self.x_visible-w_ofs, yv-self.y_visible-h_ofs, xv-w_ofs, yv-h_ofs, wv-w_ofs, hv-h_ofs)
             self.draw_top_level_items(xv, yv, wv, hv)
 
+    def redraw_image_for_cursor(self):
+        max_size = max(self.brush_min_width, self.brush_max_width)+1
+        d = max_size//2
+        model_rect = None
+        if self.xcur_old is not None and self.ycur_old is not None:
+            model_rect = rect_union(model_rect, rect_from_float_list([self.xcur_old-d, self.ycur_old-d-1, max_size+2, max_size+2]))
+        if self.show_cursor:
+            model_rect = rect_union(model_rect, rect_from_float_list([self.xcur-d-1, self.ycur-d-1, max_size+2, max_size+2]))
+        if model_rect:
+            model_rect = model_rect.intersect(gtk.gdk.Rectangle(0, 0, self.goghdoc.width, self.goghdoc.height))
+            self.redraw_image_fragment_for_model_coord(model_rect.x, model_rect.y, model_rect.width, model_rect.height)
+        self.xcur_old, self.ycur_old = self.xcur, self.ycur
+
+
     def draw_top_level_items(self, xv, yv, wv, hv):
         self.top_level_gc.set_clip_rectangle(gtk.gdk.Rectangle(xv, yv, wv, hv))
-        #xp, yp = 100, 200
-        #xp_v, yp_v = self.to_view(xp, yp)
-        #self.drawable.draw_line(self.top_level_gc, xp_v-10, yp_v+10, xp_v+10, yp_v-10)
+        if self.show_cursor:
+            xc, yc = [int(round(t)) for t in self.to_view(self.xcur, self.ycur)]
+            w1, w2 = [int(ceil(w*self.zoom_factor)) | 1 for w in (self.brush_min_width, self.brush_max_width)]
+            self.drawable.draw_arc(self.top_level_gc, False, xc-w1//2, yc-w1//2, w1, w1, 0, 360*64)
+            if w1 != w2:
+                self.drawable.draw_arc(self.top_level_gc, False, xc-w2//2, yc-w2//2, w2, w2, 0, 360*64)
 
     def to_view_rect(self, x, y, w, h):
         xv1, yv1 = [int(floor(t)) for t in self.to_view(x, y)]
@@ -136,3 +157,10 @@ class GoghView:
         self.reset_view_pixbuf()
         self.drawable.draw_pixbuf(self.drawable.new_gc(), self.viewpixbuf, 0, 0, self.x_visible, self.y_visible, -1, -1)
         self.draw_top_level_items(self.x_visible, self.y_visible, self.w_visible, self.h_visible)
+
+    def set_cursor(self, x, y, brush_data):
+        self.xcur, self.ycur, self.brush_min_width, self.brush_max_width = x, y, brush_data.min_width, brush_data.max_width
+        self.show_cursor = True
+
+    def set_no_cursor(self):
+        self.show_cursor = False
