@@ -45,8 +45,8 @@ from goghutil import *
 from command import *
 import goghglobals
 
-APPNAME='gogh'
-APPVERSION='0.1.0'
+APPNAME='Gogh'
+APPVERSION='0.1.1'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
@@ -96,8 +96,6 @@ class GoghWindow:
         x, y = self.goghview.to_model(x, y)
         self.goghview.set_cursor(x, y, self.brush_manager.active_brush_data)
         if self.is_pressed :
-            #x, y = data.get_coords()
-            #x, y = self.goghview.to_model(x, y)
             self.brush_stroke.draw_to(x, y, get_pressure(data))
         if data.device.source==gtk.gdk.SOURCE_ERASER:
             self.brush_manager.select_eraser()
