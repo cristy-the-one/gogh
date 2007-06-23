@@ -54,11 +54,11 @@ class BrushManagementDialog(GoghToolDialog):
         self.left_vbox = xml.get_widget("left_vbox")
         self.right_vbox = xml.get_widget("right_vbox")
 
-        xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
-        xml_menu.signal_autoconnect(self)
-        self.brush_list_menu = xml_menu.get_widget("brush_list_menu")
-        self.delete_brush_menu_item = xml_menu.get_widget("delete_brush_menu_item")
-        self.rename_brush_menu_item = xml_menu.get_widget("rename_brush_menu_item")
+        self.xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
+        self.xml_menu.signal_autoconnect(self)
+        #self.brush_list_menu = xml_menu.get_widget("brush_list_menu")
+        #self.delete_brush_menu_item = xml_menu.get_widget("delete_brush_menu_item")
+        #self.rename_brush_menu_item = xml_menu.get_widget("rename_brush_menu_item")
 
         self.setup_treestore()
         self.setup_treeview()
@@ -203,10 +203,18 @@ class BrushManagementDialog(GoghToolDialog):
                 if brush_data:
                     self.treeview.grab_focus()
                     self.treeview.set_cursor( path, self.treeview.get_column(0), 0)
-                    self.delete_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
-                    self.rename_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
-                    self.brush_list_menu.show_now()
-                    self.brush_list_menu.popup( None, None, None, data.button, data.time)
+                    self.show_popup_menu(path, data)
+                    #xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
+                    #xml_menu.signal_autoconnect(self)
+
+    def show_popup_menu(self, path, event_data):
+        brush_list_menu = self.xml_menu.get_widget("brush_list_menu")
+        delete_brush_menu_item = self.xml_menu.get_widget("delete_brush_menu_item")
+        rename_brush_menu_item = self.xml_menu.get_widget("rename_brush_menu_item")
+        delete_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
+        rename_brush_menu_item.set_sensitive(self.is_brush_at_path_editable(path))
+        brush_list_menu.show_now()
+        brush_list_menu.popup( None, None, None, event_data.button, event_data.time)
 
     def is_brush_at_path_editable(self, path):
         return self.treestore[path][2]
