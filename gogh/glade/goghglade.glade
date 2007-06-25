@@ -330,7 +330,6 @@
                       <widget class="GtkEventBox" id="eventbox1">
                         <property name="visible">True</property>
                         <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="extension_events">GDK_EXTENSION_EVENTS_ALL</property>
                         <signal name="leave_notify_event" handler="on_eventbox_leave_notify_event"/>
                         <signal name="button_press_event" handler="on_eventbox_button_press_event"/>
                         <signal name="motion_notify_event" handler="on_eventbox_motion_notify_event"/>
@@ -342,7 +341,7 @@
                             <property name="width_request">400</property>
                             <property name="height_request">400</property>
                             <property name="visible">True</property>
-                            <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="events">GDK_EXPOSURE_MASK</property>
                             <signal name="expose_event" handler="on_drawing_area_expose_event"/>
                           </widget>
                         </child>
