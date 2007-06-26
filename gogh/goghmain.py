@@ -50,7 +50,8 @@ APPVERSION='0.1.1'
 
 def enable_devices():
     for device in gtk.gdk.devices_list():
-        device.set_mode(gtk.gdk.MODE_SCREEN)
+        if gtk.gdk.AXIS_PRESSURE in [a[0] for a in device.axes]:
+            device.set_mode(gtk.gdk.MODE_SCREEN)
 
 def get_pressure(event_data):
     for x in event_data.device.axes :
@@ -423,6 +424,7 @@ class GoghWindow:
 
         if len(sys.argv)>1 :
             self.load_document_from_unknown_file(sys.argv[1])
+            
 
 
     def reset_cursor(self):
