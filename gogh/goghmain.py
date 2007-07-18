@@ -24,7 +24,6 @@ import gtk
 import gtk.gdk
 import gtk.glade
 import math
-import time
 import sys
 import gnome.ui
 import cPickle as pickle
@@ -44,6 +43,7 @@ from brushmanagementdialog import BrushManagementDialog
 from goghutil import *
 from command import *
 import goghglobals
+
 
 APPNAME='Gogh'
 APPVERSION='0.1.1'
@@ -134,7 +134,9 @@ class GoghWindow:
             self.is_pressed = False
             edit_action = EditLayerAction(self.goghdoc, self.layers_dialog.selected_layer_key, self.saved_pixbuf, self.brush_stroke.bounding_rectangle)
             self.goghdoc.command_stack.add(edit_action)
-            self.goghdoc.pixbuf_observer.notify_all(self.brush_stroke.bounding_rectangle)
+            self.ignore_invalidate = True
+            self.goghview.image_observer.notify_all(self.brush_stroke.bounding_rectangle)
+            self.ignore_invalidate = False
 
 
 
@@ -306,7 +308,8 @@ class GoghWindow:
 
 
     def invalidate_drawing_area(self, rect) :
-        self.drawable.invalidate_rect(rect, False)
+        if not self.ignore_invalidate :
+            self.drawable.invalidate_rect(rect, False)
 
     def get_selected_layer_pixbuf(self):
         return self.goghdoc.layer_for_key(self.layers_dialog.selected_layer_key).pixbuf
@@ -425,6 +428,8 @@ class GoghWindow:
         if len(sys.argv)>1 :
             self.load_document_from_unknown_file(sys.argv[1])
             
+
+        self.ignore_invalidate = False
 
 
     def reset_cursor(self):
