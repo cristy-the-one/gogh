@@ -112,13 +112,18 @@ class GoghView:
     def redraw_image_fragment_for_model_coord(self, x, y, w, h):
         xv, yv, wv, hv = self.to_view_rect(x, y, w, h)
         if self.zoom_factor==1:
-            self.drawable.draw_pixbuf(self.gc, self.goghdoc.composite, xv, yv, xv, yv, wv, hv)
-            self.draw_top_level_items(xv, yv, wv, hv)
+            self.draw_pixbuf_with_clipping(self.goghdoc.composite, xv, yv, xv, yv, wv, hv)
         else:
             xv, yv, wv, hv = xv-1, yv-1, wv+2, hv+2
-            w_ofs, h_ofs = min(xv-self.x_visible, 0), min(yv-self.y_visible, 0)
-            self.drawable.draw_pixbuf(self.gc, self.viewpixbuf, xv-self.x_visible-w_ofs, yv-self.y_visible-h_ofs, xv-w_ofs, yv-h_ofs, wv-w_ofs, hv-h_ofs)
-            self.draw_top_level_items(xv, yv, wv, hv)
+            self.draw_pixbuf_with_clipping(self.viewpixbuf, xv-self.x_visible, yv-self.y_visible, xv, yv, wv, hv)
+        self.draw_top_level_items(xv, yv, wv, hv)
+
+    def draw_pixbuf_with_clipping(self, pixbuf, src_x, src_y, dest_x, dest_y, w, h):
+        w_ofs, h_ofs = min(src_x, 0), min(src_y, 0)
+        w_cutoff, h_cutoff = max(src_x+w-pixbuf.get_width(), 0), max(src_y+h-pixbuf.get_height(), 0)
+        if w<=w_ofs+w_cutoff or h<=h_ofs+h_cutoff:
+            return
+        self.drawable.draw_pixbuf(self.gc, pixbuf, src_x-w_ofs, src_y-h_ofs, dest_x-w_ofs, dest_y-h_ofs, w-w_ofs-w_cutoff, h-h_ofs-h_cutoff)
 
     def redraw_image_for_cursor(self):
         max_size = max(self.brush_min_width, self.brush_max_width)+1
