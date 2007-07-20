@@ -64,9 +64,9 @@ class BrushManagementDialog(GoghToolDialog):
         self.setup_treeview()
 
         self.liststore = gtk.ListStore(object, str)
-        self.liststore.append([BrushType.Pen, "Pen"])
-        self.liststore.append([BrushType.Eraser, "Eraser"])
-        self.liststore.append([BrushType.Smudge, "Smudge"])
+        self.liststore.append([BrushType.Pen, _("Pen")])
+        self.liststore.append([BrushType.Eraser, _("Eraser")])
+        self.liststore.append([BrushType.Smudge, _("Smudge")])
         self.brush_type_combobox.set_model(self.liststore)
         combo_cell = gtk.CellRendererText()
         self.brush_type_combobox.pack_start(combo_cell, True)
@@ -103,26 +103,26 @@ class BrushManagementDialog(GoghToolDialog):
 
     def create_controls_for_brush_type(self, brush_type):
         self.remove_all_brush_control()
-        min_size_control = BrushSettingControl(self, 'min_width', 'Brush size at lowest pressure', 1, 30, 0)
-        max_size_control = BrushSettingControl(self, 'max_width', 'Brush size at highest pressure', 1, 30, 0)
+        min_size_control = BrushSettingControl(self, 'min_width', _('Brush size at lowest pressure'), 1, 30, 0)
+        max_size_control = BrushSettingControl(self, 'max_width', _('Brush size at highest pressure'), 1, 30, 0)
         self.brush_controls = [min_size_control, max_size_control]
 
         self.left_vbox.pack_start(min_size_control.control, False, False)
         self.right_vbox.pack_start(max_size_control.control, False, False)
 
         if brush_type!=BrushType.Smudge:
-            min_opacity_control = BrushSettingControl(self, 'min_opacity', 'Opacity at lowest pressure', 0, 1, 2)
-            max_opacity_control = BrushSettingControl(self, 'max_opacity', 'Opacity at highest pressure', 0, 1, 2)
+            min_opacity_control = BrushSettingControl(self, 'min_opacity', _('Opacity at lowest pressure'), 0, 1, 2)
+            max_opacity_control = BrushSettingControl(self, 'max_opacity', _('Opacity at highest pressure'), 0, 1, 2)
             self.left_vbox.pack_start(min_opacity_control.control, False, False)
             self.right_vbox.pack_start(max_opacity_control.control, False, False)
             self.brush_controls += [min_opacity_control, max_opacity_control]
 
         if brush_type==BrushType.Smudge:
-            smudge_amount_control = BrushSettingControl(self, 'smudge_amount', 'Smudge amount', 0, 1, 2)
+            smudge_amount_control = BrushSettingControl(self, 'smudge_amount', _('Smudge amount'), 0, 1, 2)
             self.left_vbox.pack_start(smudge_amount_control.control, False, False)
             self.brush_controls += [smudge_amount_control]
 
-        step_control = BrushSettingControl(self, 'step', 'Step', 1, 15, 0)
+        step_control = BrushSettingControl(self, 'step', _('Step'), 1, 15, 0)
         self.left_vbox.pack_start(step_control.control, False, False)
         self.brush_controls += [step_control]
 
@@ -156,7 +156,7 @@ class BrushManagementDialog(GoghToolDialog):
 
 
     def setup_treeview(self):
-        brush_name_column = gtk.TreeViewColumn('Brush')
+        brush_name_column = gtk.TreeViewColumn(_('Brush'))
         self.treeview.append_column(brush_name_column)
         brush_cell = gtk.CellRendererText()
         brush_name_column.pack_start(brush_cell, True)

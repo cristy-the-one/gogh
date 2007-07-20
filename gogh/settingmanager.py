@@ -55,7 +55,7 @@ def save_brush_list_xmldoc(doc):
         xml.dom.ext.PrettyPrint(doc, f)
         f.close()
     except:
-        print 'Cannot save custom brush list'
+        print _('Cannot save custom brush list')
 
 
 

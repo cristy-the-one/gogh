@@ -241,7 +241,7 @@
                 <property name="visible">True</property>
                 <property name="label">Brushes</property>
                 <property name="use_underline">True</property>
-                <property name="stock_id">gtk-index</property>
+                <property name="stock_id">gnome-stock-multiple-file</property>
                 <signal name="clicked" handler="on_brush_list_menubutton_clicked"/>
               </widget>
               <packing>
@@ -330,7 +330,7 @@
                       <widget class="GtkEventBox" id="eventbox1">
                         <property name="visible">True</property>
                         <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="extension_events">GDK_EXTENSION_EVENTS_CURSOR</property>
+                        <property name="extension_events">GDK_EXTENSION_EVENTS_ALL</property>
                         <signal name="leave_notify_event" handler="on_eventbox_leave_notify_event"/>
                         <signal name="button_press_event" handler="on_eventbox_button_press_event"/>
                         <signal name="motion_notify_event" handler="on_eventbox_motion_notify_event"/>
@@ -918,8 +918,8 @@
     <property name="visible">True</property>
     <property name="modal">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="do_overwrite_confirmation">True</property>
     <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
+    <property name="do_overwrite_confirmation">True</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>

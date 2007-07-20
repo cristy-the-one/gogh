@@ -89,7 +89,7 @@ class GoghWindow:
         try:
             self.brush_manager.save_brush_list()
         except:
-            print 'Could not save the settings'
+            print _('Could not save the settings')
 
 
     def on_eventbox_motion_notify_event(self, widget, data=None):
@@ -235,7 +235,7 @@ class GoghWindow:
 
 
     def on_open1_activate(self, widget, data=None):
-        open_dialog = gtk.FileChooserDialog("Open", self.editor_window, gtk.FILE_CHOOSER_ACTION_OPEN, open_dialog_buttons)
+        open_dialog = gtk.FileChooserDialog(_("Open"), self.editor_window, gtk.FILE_CHOOSER_ACTION_OPEN, open_dialog_buttons)
         open_dialog.add_filter(self.gogh_filter)
         open_dialog.add_filter(self.image_file_filter)
         open_dialog.add_filter(self.all_files_filter)
@@ -274,18 +274,18 @@ class GoghWindow:
             try:
                 self.load_document_from_image_file(filename)
             except:
-                print 'Could not open file: ', filename
+                print _('Could not open file: %(filename)s') % {'filename' : filename}
 
 
     def on_save1_activate(self, widget, data=None):
         if not self.goghdoc.has_name() :
-            self.launch_save_dialog("Save")
+            self.launch_save_dialog(_("Save"))
         else:
             self.goghdoc.save(self.goghdoc.document_name)
         self.reset_window_title()
 
     def on_save_as1_activate(self, widget, data=None):
-        self.launch_save_dialog("Save As")
+        self.launch_save_dialog(_("Save As"))
         self.reset_window_title()
 
     def launch_save_dialog(self, dialog_title):
@@ -320,7 +320,7 @@ class GoghWindow:
         self.drawable.invalidate_rect(None, False)
 
     def reset_window_title(self):
-        caption = "Gogh - "+self.goghdoc.document_name
+        caption = _("Gogh - ")+self.goghdoc.document_name
         if self.goghdoc.is_changed_since_save():
             caption += " *"
         self.editor_window.set_title(caption)
@@ -406,12 +406,12 @@ class GoghWindow:
         self.reset_cursor()
 
         self.gogh_filter = gtk.FileFilter()
-        self.gogh_filter.set_name("Gogh Documents")
+        self.gogh_filter.set_name(_("Gogh Documents"))
         self.gogh_filter.add_pattern("*.gogh")
         self.gogh_filter.add_pattern("image/gogh")
 
         self.image_file_filter = gtk.FileFilter()
-        self.image_file_filter.set_name("Images")
+        self.image_file_filter.set_name(_("Images"))
         self.image_file_filter.add_pattern("*.jpeg")
         self.image_file_filter.add_pattern("*.jpg")
         self.image_file_filter.add_pattern("*.png")
@@ -422,12 +422,11 @@ class GoghWindow:
         self.image_file_filter.add_pattern("image/png")
 
         self.all_files_filter = gtk.FileFilter()
-        self.all_files_filter.set_name("All files")
+        self.all_files_filter.set_name(_("All files"))
         self.all_files_filter.add_pattern("*")
 
         if len(sys.argv)>1 :
             self.load_document_from_unknown_file(sys.argv[1])
-            
 
         self.ignore_invalidate = False
 

@@ -26,7 +26,7 @@ from goghtooldialog import GoghToolDialog
 
 class ColorDialog(GoghToolDialog):
     def __init__(self):
-        self.dialog = gtk.ColorSelectionDialog("Select Color")
+        self.dialog = gtk.ColorSelectionDialog(_("Select Color"))
         self.dialog.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         self.dialog.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_UTILITY)
         self.dialog.colorsel.set_current_color(gtk.gdk.Color(0))

@@ -39,7 +39,7 @@ class GoghLayer:
             self.pixbuf.fill(0xFFFFFF00)
         self.key = key
         self.alpha = 1.0
-        self.name = "Layer "+str(self.key)
+        self.name = _("Layer %(layername)s") % { 'layername' : str(self.key)}
         self.is_locked = False
         self.blend_mode = LayerBlendModes.Standard
 
@@ -57,7 +57,7 @@ class GoghLayer:
             self.blend_mode = LayerBlendModes.Standard
         self.__dict__.update(state)
 
-default_document_name = 'Untitled'
+default_document_name = _('Untitled')
 
 class GoghDoc:
     def __init__(self, pixbuf = None, width = 0, height = 0):
