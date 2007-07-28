@@ -39,7 +39,7 @@ class GoghLayer:
             self.pixbuf.fill(0xFFFFFF00)
         self.key = key
         self.alpha = 1.0
-        self.name = _("Layer %(layername)s") % { 'layername' : str(self.key)}
+        self.name = _("Layer %d") % self.key
         self.is_locked = False
         self.blend_mode = LayerBlendModes.Standard
 

@@ -228,7 +228,7 @@ class BrushManagementDialog(GoghToolDialog):
         current_iter = self.treestore.get_iter(self.current_path())
         brush_data = self.treestore.get_value(current_iter, 0)
         new_brush_data = brush_data.create_copy()
-        new_brush_data.name = '%(brushname)s Copy' % {'brushname' : brush_data.name}
+        new_brush_data.name = _('%(brushname)s Copy') % {'brushname' : brush_data.name}
         self.brush_manager.add_brush(self.brush_manager.group_for_brush(brush_data), new_brush_data)
         new_iter = self.treestore.append(self.treestore.iter_parent(current_iter), self.create_row_for_brush(new_brush_data))
         self.treeview.set_cursor(self.treestore.get_path(new_iter))

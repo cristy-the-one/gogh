@@ -29,7 +29,7 @@ class BrushType:
     Pen, Eraser, Smudge = range(3)
 
 class BrushData:
-    def __init__(self, name = _("Custom"), min_width = 1, max_width=4, min_opacity=0, max_opacity=1, step=1, smudge_amount=0.5, brush_type = BrushType.Pen):
+    def __init__(self, name = "Custom", min_width = 1, max_width=4, min_opacity=0, max_opacity=1, step=1, smudge_amount=0.5, brush_type = BrushType.Pen):
         self.name = name
         self.min_width = int(min_width)
         self.max_width = int(max_width)
