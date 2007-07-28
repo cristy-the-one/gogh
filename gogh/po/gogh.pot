@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-19 23:36-0400\n"
+"POT-Creation-Date: 2007-07-28 00:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,13 +60,18 @@ msgstr ""
 msgid "Brush"
 msgstr ""
 
+#: brushmanagementdialog.py:231
+#, python-format
+msgid "%(brushname)s Copy"
+msgstr ""
+
 #: colordialog.py:29
 msgid "Select Color"
 msgstr ""
 
 #: goghdoc.py:42
 #, python-format
-msgid "Layer %(layername)s"
+msgid "Layer %d"
 msgstr ""
 
 #: goghdoc.py:60
@@ -154,36 +159,8 @@ msgstr ""
 msgid "_File"
 msgstr ""
 
-#: glade/goghglade.glade:29
-msgid "gtk-new"
-msgstr ""
-
-#: glade/goghglade.glade:38
-msgid "gtk-open"
-msgstr ""
-
-#: glade/goghglade.glade:47
-msgid "gtk-save"
-msgstr ""
-
-#: glade/goghglade.glade:56
-msgid "gtk-save-as"
-msgstr ""
-
-#: glade/goghglade.glade:70
-msgid "gtk-quit"
-msgstr ""
-
 #: glade/goghglade.glade:83
 msgid "_Edit"
-msgstr ""
-
-#: glade/goghglade.glade:90
-msgid "gtk-undo"
-msgstr ""
-
-#: glade/goghglade.glade:100
-msgid "gtk-redo"
 msgstr ""
 
 #: glade/goghglade.glade:115 glade/goghglade.glade:582
@@ -210,27 +187,15 @@ msgstr ""
 msgid "Show Brush Management Dialog"
 msgstr ""
 
-#: glade/goghglade.glade:171
-msgid "gtk-zoom-in"
-msgstr ""
-
-#: glade/goghglade.glade:180
-msgid "gtk-zoom-out"
-msgstr ""
-
-#: glade/goghglade.glade:189
-msgid "gtk-zoom-100"
-msgstr ""
-
 #: glade/goghglade.glade:202
 msgid "_Help"
 msgstr ""
 
-#: glade/goghglade.glade:209
-msgid "gtk-about"
+#: glade/goghglade.glade:242
+msgid "Brushes"
 msgstr ""
 
-#: glade/goghglade.glade:365
+#: glade/goghglade.glade:264 glade/goghglade.glade:365
 msgid "Layers"
 msgstr ""
 
@@ -238,44 +203,44 @@ msgstr ""
 msgid "New..."
 msgstr ""
 
-#: glade/goghglade.glade:487 glade/goghglade.glade:1326
-msgid "Width"
-msgstr ""
-
-#: glade/goghglade.glade:500 glade/goghglade.glade:1337
+#: glade/goghglade.glade:517 glade/goghglade.glade:1391
 msgid "Height"
 msgstr ""
 
-#: glade/goghglade.glade:682
-msgid "Top"
+#: glade/goghglade.glade:531 glade/goghglade.glade:1404
+msgid "Width"
 msgstr ""
 
-#: glade/goghglade.glade:698
-msgid "Bottom"
+#: glade/goghglade.glade:600
+msgid "Right"
 msgstr ""
 
-#: glade/goghglade.glade:714
+#: glade/goghglade.glade:614
 msgid "Left"
 msgstr ""
 
-#: glade/goghglade.glade:728
-msgid "Right"
+#: glade/goghglade.glade:628
+msgid "Bottom"
+msgstr ""
+
+#: glade/goghglade.glade:644
+msgid "Top"
 msgstr ""
 
 #: glade/goghglade.glade:794
 msgid "Dummy"
 msgstr ""
 
-#: glade/goghglade.glade:806
-msgid "Opacity :"
+#: glade/goghglade.glade:820
+msgid "Blend Mode:"
 msgstr ""
 
-#: glade/goghglade.glade:839
+#: glade/goghglade.glade:870
 msgid "<Layer Name>"
 msgstr ""
 
-#: glade/goghglade.glade:888
-msgid "Blend Mode:"
+#: glade/goghglade.glade:902
+msgid "Opacity :"
 msgstr ""
 
 #: glade/goghglade.glade:930
@@ -321,26 +286,18 @@ msgstr ""
 msgid "Restore Original Settings"
 msgstr ""
 
-#: glade/goghglade.glade:1275
-msgid "gtk-copy"
-msgstr ""
-
-#: glade/goghglade.glade:1284
-msgid "gtk-delete"
-msgstr ""
-
 #: glade/goghglade.glade:1293
 msgid "Rename"
 msgstr ""
 
-#: glade/goghglade.glade:1382
-msgid "Scale proportionally"
-msgstr ""
-
-#: glade/goghglade.glade:1399
+#: glade/goghglade.glade:1325
 msgid ""
 "pixels\n"
 "percents"
+msgstr ""
+
+#: glade/goghglade.glade:1341
+msgid "Scale proportionally"
 msgstr ""
 
 #: glade/goghglade.glade:1461
