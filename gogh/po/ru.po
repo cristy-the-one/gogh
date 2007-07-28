@@ -1,0 +1,343 @@
+# Russian translations for PACKAGE package.
+# Copyright (C) 2007 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Aleksey Y. Nelipa <aleksey@goghproject.com>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-07-28 00:06-0400\n"
+"PO-Revision-Date: 2007-07-27 19:52-0500\n"
+"Last-Translator: Aleksey Y. Nelipa <aleksey@goghproject.com>\n"
+"Language-Team: Russian <aleksey@goghproject.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: brushmanagementdialog.py:67
+msgid "Pen"
+msgstr "Перо"
+
+#: brushmanagementdialog.py:68
+msgid "Eraser"
+msgstr "Ластик"
+
+#: brushmanagementdialog.py:69
+msgid "Smudge"
+msgstr "Палец"
+
+#: brushmanagementdialog.py:106
+msgid "Brush size at lowest pressure"
+msgstr "Размер кисти при мин. нажиме"
+
+#: brushmanagementdialog.py:107
+msgid "Brush size at highest pressure"
+msgstr "Размер кисти при макс. нажиме"
+
+#: brushmanagementdialog.py:114
+msgid "Opacity at lowest pressure"
+msgstr "Непрозрачность при мин. нажиме"
+
+#: brushmanagementdialog.py:115
+msgid "Opacity at highest pressure"
+msgstr "Непрозрачность при макс. нажиме"
+
+#: brushmanagementdialog.py:121
+msgid "Smudge amount"
+msgstr "Размазывание"
+
+#: brushmanagementdialog.py:125
+msgid "Step"
+msgstr "Шаг"
+
+#: brushmanagementdialog.py:159
+msgid "Brush"
+msgstr "Кисть"
+
+#: brushmanagementdialog.py:231
+#, python-format
+msgid "%(brushname)s Copy"
+msgstr "%(brushname)s - Копия"
+
+#: colordialog.py:29
+msgid "Select Color"
+msgstr "Выбрать Цвет"
+
+#: goghdoc.py:42
+#, python-format
+msgid "Layer %d"
+msgstr "Слой %d"
+
+#: goghdoc.py:60
+msgid "Untitled"
+msgstr "Безымянный"
+
+#: goghmain.py:92
+msgid "Could not save the settings"
+msgstr "Невозможно сохранить настройки"
+
+#: goghmain.py:238
+msgid "Open"
+msgstr "Открыть"
+
+#: goghmain.py:277
+#, python-format
+msgid "Could not open file: %(filename)s"
+msgstr "Невозможно открыть файл: %(filename)s"
+
+#: goghmain.py:282
+msgid "Save"
+msgstr "Сохранить"
+
+#: goghmain.py:288
+msgid "Save As"
+msgstr "Сохранить как"
+
+#: goghmain.py:323
+msgid "Gogh - "
+msgstr "Gogh - "
+
+#: goghmain.py:409
+msgid "Gogh Documents"
+msgstr "Документы Gogh"
+
+#: goghmain.py:414
+msgid "Images"
+msgstr "Изображения"
+
+#: goghmain.py:425
+msgid "All files"
+msgstr "Все файлы"
+
+#: layersdialog.py:47
+msgid "Standard"
+msgstr "Стандартный"
+
+#: layersdialog.py:48
+msgid "Darken"
+msgstr "Затемнение"
+
+#: layersdialog.py:49
+msgid "Lighten"
+msgstr "Осветление"
+
+#: layersdialog.py:50
+msgid "Addition"
+msgstr "Добавление"
+
+#: layersdialog.py:51
+msgid "Subtraction"
+msgstr "Вычитание"
+
+#: layersdialog.py:52
+msgid "Difference"
+msgstr "Различие"
+
+#: layersdialog.py:53
+msgid "Multiply"
+msgstr "Умножение"
+
+#: layersdialog.py:54
+msgid "Divide"
+msgstr "Деление"
+
+#: settingmanager.py:58
+msgid "Cannot save custom brush list"
+msgstr "Невозможно сохранить список кистей"
+
+#: glade/goghglade.glade:7
+msgid "Gogh bitmap editor"
+msgstr "Графический растровый редактор Gogh"
+
+#: glade/goghglade.glade:22
+msgid "_File"
+msgstr "_Файл"
+
+#: glade/goghglade.glade:83
+msgid "_Edit"
+msgstr "_Правка"
+
+#: glade/goghglade.glade:115 glade/goghglade.glade:582
+msgid "Resize"
+msgstr "Изменить размер"
+
+#: glade/goghglade.glade:123 glade/goghglade.glade:1305
+msgid "Scale"
+msgstr "Масштаб"
+
+#: glade/goghglade.glade:135
+msgid "_View"
+msgstr "_Вид"
+
+#: glade/goghglade.glade:142
+msgid "Show Color Selection"
+msgstr "Показать форму выбора цвета"
+
+#: glade/goghglade.glade:150
+msgid "Show Layer Selection"
+msgstr "Показать форму выбора слоя"
+
+#: glade/goghglade.glade:158
+msgid "Show Brush Management Dialog"
+msgstr "Показать форму управления кистями"
+
+#: glade/goghglade.glade:202
+msgid "_Help"
+msgstr "_Справка"
+
+#: glade/goghglade.glade:242
+msgid "Brushes"
+msgstr "Кисти"
+
+#: glade/goghglade.glade:264 glade/goghglade.glade:365
+msgid "Layers"
+msgstr "Слои"
+
+#: glade/goghglade.glade:471
+msgid "New..."
+msgstr "Новый документ"
+
+#: glade/goghglade.glade:517 glade/goghglade.glade:1391
+msgid "Height"
+msgstr "Высота"
+
+#: glade/goghglade.glade:531 glade/goghglade.glade:1404
+msgid "Width"
+msgstr "Ширина"
+
+#: glade/goghglade.glade:600
+msgid "Right"
+msgstr "Справа"
+
+#: glade/goghglade.glade:614
+msgid "Left"
+msgstr "Слева"
+
+#: glade/goghglade.glade:628
+msgid "Bottom"
+msgstr "Снизу"
+
+#: glade/goghglade.glade:644
+msgid "Top"
+msgstr "Сверху"
+
+#: glade/goghglade.glade:794
+msgid "Dummy"
+msgstr ""
+
+#: glade/goghglade.glade:820
+msgid "Blend Mode:"
+msgstr "Режим смешения"
+
+#: glade/goghglade.glade:870
+msgid "<Layer Name>"
+msgstr ""
+
+#: glade/goghglade.glade:902
+msgid "Opacity :"
+msgstr "Непрозрачность :"
+
+#: glade/goghglade.glade:930
+msgid ""
+"Gogh document\n"
+"PNG image\n"
+"JPEG image"
+msgstr ""
+"Документ Gogh\n"
+"Изображение PNG\n"
+"Изображение JPEG"
+
+#: glade/goghglade.glade:979
+msgid "Brush Management"
+msgstr "Управление кистями"
+
+#: glade/goghglade.glade:997
+msgid "Brush List:"
+msgstr "Список кистей:"
+
+#: glade/goghglade.glade:1040
+msgid "Copy Brush"
+msgstr "Создать копию кисти"
+
+#: glade/goghglade.glade:1052
+msgid "Delete Brush"
+msgstr "Удалить кисть"
+
+#: glade/goghglade.glade:1064
+msgid "Rename Brush"
+msgstr "Переименовать кисть"
+
+#: glade/goghglade.glade:1094
+msgid "Brush Group: "
+msgstr "Группа кистей: "
+
+#: glade/goghglade.glade:1104
+msgid "..."
+msgstr ""
+
+#: glade/goghglade.glade:1128
+msgid "Brush Type: "
+msgstr "Тип Кисти"
+
+#: glade/goghglade.glade:1238
+msgid "Restore Original Settings"
+msgstr "Восстановить исходные настройки"
+
+#: glade/goghglade.glade:1293
+msgid "Rename"
+msgstr "Переименовать"
+
+#: glade/goghglade.glade:1325
+msgid ""
+"pixels\n"
+"percents"
+msgstr ""
+"пиксели\n"
+"проценты"
+
+#: glade/goghglade.glade:1341
+msgid "Scale proportionally"
+msgstr "Масштаб пропорционально"
+
+#: glade/goghglade.glade:1461
+msgid "label"
+msgstr ""
+
+#: glade/goghglade.glade:1481
+msgid "About Gogh"
+msgstr "О программе Gogh"
+
+#: glade/goghglade.glade:1492
+msgid "Copyright (C) 2005-2007, Aleksey Y. Nelipa"
+msgstr ""
+
+#: glade/goghglade.glade:1493
+msgid "A bitmap graphics editor."
+msgstr "Растровый графический редактор."
+
+#: glade/goghglade.glade:1495
+msgid "http://www.goghproject.com"
+msgstr ""
+
+#: glade/goghglade.glade:1496
+msgid ""
+"This program is free software; you can redistribute it and/or\n"
+"modify it under the terms of the GNU General Public License\n"
+"as published by the Free Software Foundation; either version 2\n"
+"of the License, or (at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA."
+msgstr ""
