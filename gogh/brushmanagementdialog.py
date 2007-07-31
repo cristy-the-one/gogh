@@ -56,9 +56,6 @@ class BrushManagementDialog(GoghToolDialog):
 
         self.xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
         self.xml_menu.signal_autoconnect(self)
-        #self.brush_list_menu = xml_menu.get_widget("brush_list_menu")
-        #self.delete_brush_menu_item = xml_menu.get_widget("delete_brush_menu_item")
-        #self.rename_brush_menu_item = xml_menu.get_widget("rename_brush_menu_item")
 
         self.setup_treestore()
         self.setup_treeview()
@@ -204,8 +201,6 @@ class BrushManagementDialog(GoghToolDialog):
                     self.treeview.grab_focus()
                     self.treeview.set_cursor( path, self.treeview.get_column(0), 0)
                     self.show_popup_menu(path, data)
-                    #xml_menu = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="brush_list_menu")
-                    #xml_menu.signal_autoconnect(self)
 
     def show_popup_menu(self, path, event_data):
         brush_list_menu = self.xml_menu.get_widget("brush_list_menu")
@@ -263,4 +258,5 @@ class BrushManagementDialog(GoghToolDialog):
         brush_data = self.treestore[self.current_path()][0]
         brush_data.brush_type = new_type
         self.create_controls_for_brush_type(brush_data.brush_type)
+        self.set_brush_data_for_all_brush_controls(brush_data)
 
