@@ -20,7 +20,7 @@
 
 from distutils.core import setup
 
-from goghmain import APPNAME, APPVERSION
+from goghglobals import APPNAME, APPVERSION
 
 setup(name=APPNAME,
       version=APPVERSION,

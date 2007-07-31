@@ -135,7 +135,7 @@ class LayersDialog(GoghToolDialog):
                 self.selected_layer_key = None
 
 
-    def reset_images(self, rect=None) :
+    def reset_images(self, *params) :
         if not self.dialog.get_property('visible'):
             return
         for layer_control in self.layer_controls:

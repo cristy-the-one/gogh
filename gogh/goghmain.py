@@ -45,9 +45,6 @@ from command import *
 import goghglobals
 
 
-APPNAME='Gogh'
-APPVERSION='0.1.1'
-
 def enable_devices():
     for device in gtk.gdk.devices_list():
         if gtk.gdk.AXIS_PRESSURE in [a[0] for a in device.axes]:
@@ -134,9 +131,7 @@ class GoghWindow:
             self.is_pressed = False
             edit_action = EditLayerAction(self.goghdoc, self.layers_dialog.selected_layer_key, self.saved_pixbuf, self.brush_stroke.bounding_rectangle)
             self.goghdoc.command_stack.add(edit_action)
-            self.ignore_invalidate = True
-            self.goghview.image_observer.notify_all(self.brush_stroke.bounding_rectangle)
-            self.ignore_invalidate = False
+            self.goghview.image_observer.notify_all(self.brush_stroke.bounding_rectangle, True)
 
 
 
@@ -307,8 +302,8 @@ class GoghWindow:
             self.reset_cursor()
 
 
-    def invalidate_drawing_area(self, rect) :
-        if not self.ignore_invalidate :
+    def invalidate_drawing_area(self, rect, is_for_stroke_finish) :
+        if not is_for_stroke_finish:
             self.drawable.invalidate_rect(rect, False)
 
     def get_selected_layer_pixbuf(self):
@@ -356,7 +351,7 @@ class GoghWindow:
 
 
     def __init__(self):
-        gnome.init(APPNAME, APPVERSION)
+        gnome.init(goghglobals.APPNAME, goghglobals.APPVERSION)
 
         enable_devices()
         xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="gogh_drawing_window")
@@ -364,8 +359,8 @@ class GoghWindow:
 
         xml_about = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="gogh_about_dialog")
         self.about_dialog = xml_about.get_widget("gogh_about_dialog")
-        self.about_dialog.set_name(APPNAME)
-        self.about_dialog.set_version(APPVERSION)
+        self.about_dialog.set_name(goghglobals.APPNAME)
+        self.about_dialog.set_version(goghglobals.APPVERSION)
 
         self.draw_area = xml.get_widget("drawing_area")
         self.drawable = self.draw_area.window
