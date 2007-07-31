@@ -5,3 +5,4 @@ include glade/*.svg
 include README
 include COPYING
 include brushlist.xml
+recursive-include po *.mo
