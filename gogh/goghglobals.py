@@ -21,4 +21,4 @@
 gogh_main_window = None
 
 APPNAME='Gogh'
-APPVERSION='0.1.2'
+APPVERSION='0.1.2.1'

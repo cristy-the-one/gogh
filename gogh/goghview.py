@@ -92,11 +92,11 @@ class GoghView:
 
     def refresh_area(self, area_rect=None):
         if not area_rect:
-            self.image_observer.notify_all(gtk.gdk.Rectangle(0, 0, self.w_visible, self.h_visible))
+            self.image_observer.notify_all(gtk.gdk.Rectangle(0, 0, self.w_visible, self.h_visible), False)
             return
         xv, yv, wv, hv = self.to_view_rect(area_rect.x, area_rect.y, area_rect.width, area_rect.height)
         self.scale_with_clipping(xv-self.x_visible, yv-self.y_visible, wv, hv)
-        self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv))
+        self.image_observer.notify_all(gtk.gdk.Rectangle(xv, yv, wv, hv), False)
 
     def on_resize(self):
         self.reset_view_pixbuf()
