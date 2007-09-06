@@ -32,8 +32,8 @@ from brushdata import BrushType
 from goghutil import *
 
 class DabRectCoords:
-    def __init__(self, x1, y1, x2, y2, brush_provider, pressure):
-        brush_width, brush_height = brush_provider.get_brush_dimensions(pressure)
+    def __init__(self, x1, y1, x2, y2, brush_provider, max_pressure):
+        brush_width, brush_height = brush_provider.get_brush_dimensions(max_pressure)
         self.x, self.y = int(floor(min(x1, x2)))-brush_width//2, int(floor(min(y1, y2)))-brush_height//2
         self.width, self.height = int(ceil(abs(x1-x2)))+brush_width, int(ceil(abs(y1-y2)))+brush_height
 
@@ -50,20 +50,20 @@ class DabRectCoords:
 
 
 class DabRect:
-    def __init__(self, x1, y1, x2, y2, brush_provider, pressure):
-        self.coords = DabRectCoords(x1, y1, x2, y2, brush_provider, pressure)
+    def __init__(self, x1, y1, x2, y2, brush_provider, max_pressure):
+        self.coords = DabRectCoords(x1, y1, x2, y2, brush_provider, max_pressure)
+        self.max_pressure = max_pressure
         self.brush_provider = brush_provider
-        self.pressure = pressure
         self.alphas = zeros((self.coords.height, self.coords.width), Float)
 
 
-    def put_brush(self, x, y):
+    def put_brush(self, x, y, pressure):
         x-=self.coords.x
         y-=self.coords.y
-        adj_brush = self.brush_provider.get_adjusted_brush(self.pressure, x-int(x), y-int(y))
+        adj_brush = self.brush_provider.get_adjusted_brush(pressure, x-int(x), y-int(y))
         xt = int(floor(x))-adj_brush.shape[1]//2
         yt = int(floor(y))-adj_brush.shape[0]//2
-        alpha = self.brush_provider.brush_data.opacity_for_pressure(self.pressure)
+        alpha = self.brush_provider.brush_data.opacity_for_pressure(pressure)
         brush_dest = self.alphas[yt:yt+adj_brush.shape[0], xt:xt+adj_brush.shape[1]]
         brush_dest[...]=(1-(1-alpha*adj_brush)*(1-brush_dest))[...]
 
@@ -93,20 +93,22 @@ class AbstractBrushStroke:
             return
         self.last_x = x
         self.last_y = y
+        self.last_pressure = 0
 
     def draw_to(self, x, y, pressure):
         if(len(self.goghdoc.layers) == 0):
             return
         delta_x = x-self.last_x
         delta_y = y-self.last_y
+        delta_pressure = pressure-self.last_pressure
         if delta_x==0 and delta_y==0:
             return
         h = math.hypot(delta_x, delta_y)
         intermediate_points = arange(self.offset, h, self.brush_options.step)
-        intermediate_coords = [(self.last_x+delta_x*t/h, self.last_y+delta_y*t/h) for t in intermediate_points]
+        intermediate_coords = [(self.last_x+delta_x*t/h, self.last_y+delta_y*t/h, self.last_pressure+delta_pressure*t/h) for t in intermediate_points]
         self.dab_rect_coords = DabRectCoords(self.last_x, self.last_y, x, y, self.brush_provider, pressure)
         self.expand_bounding_rectangle(self.dab_rect_coords.get_rectangle())
-        self.apply_brush_stroke(self.last_x, self.last_y, x, y, intermediate_coords, pressure)
+        self.apply_brush_stroke(self.last_x, self.last_y, x, y, intermediate_coords, max(self.last_pressure, pressure))
 
         x_r, y_r, w_r, h_r = rect_to_list(self.dab_rect_coords.get_rectangle())
         self.goghview.update_view_pixbuf(x_r, y_r, w_r, h_r)
@@ -116,7 +118,7 @@ class AbstractBrushStroke:
             self.offset = self.brush_options.step-(h-intermediate_points[-1])
         else :
             self.offset -= h
-        self.last_x, self.last_y = x, y
+        self.last_x, self.last_y, self.last_pressure = x, y, pressure
 
     def get_dab_rectangle(self, x0, y0, x1, y1, pressure):
         brush_width, brush_height = self.brush_provider.get_brush_dimensions(pressure)
@@ -142,14 +144,14 @@ class BrushStroke (AbstractBrushStroke):
         AbstractBrushStroke.__init__(self, goghview, current_layer_key, brush_options)
         self.color = color
 
-    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
-        dab_rect = DabRect(x0, y0, x1, y1, self.brush_provider, pressure)
-        for x, y in intermediate_coords:
-            dab_rect.put_brush(x, y)
+    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, max_pressure):
+        dab_rect = DabRect(x0, y0, x1, y1, self.brush_provider, max_pressure)
+        for x, y, pressure in intermediate_coords:
+            dab_rect.put_brush(x, y, pressure)
         self.put_dab_on_layer(dab_rect)
 
     def put_dab_on_layer(self, dab_rect):
-        opacity = self.brush_options.opacity_for_pressure(dab_rect.pressure)
+        opacity = self.brush_options.opacity_for_pressure(dab_rect.max_pressure)
         dab_pixbuf = dab_rect.get_trimmed_pixbuf(self.color, self.goghdoc.width, self.goghdoc.height)
         if not dab_pixbuf:
             return
@@ -175,11 +177,11 @@ class SmudgeBrushStroke (AbstractBrushStroke):
 
 
 
-    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, pressure):
+    def apply_brush_stroke(self, x0, y0, x1, y1, intermediate_coords, max_pressure):
         layer = self.goghdoc.layer_for_key(self.current_layer_key)
         pix_array = layer.pixbuf.get_pixels_array()
         smudge_amt = self.brush_options.smudge_amount
-        for x, y in intermediate_coords:
+        for x, y, pressure in intermediate_coords:
             adj_brush = self.brush_provider.get_adjusted_brush(pressure, x-int(x), y-int(y))
             brush_w, brush_h = adj_brush.shape[0], adj_brush.shape[1]
             brush = zeros((brush_w, brush_h, 1), Float)
