@@ -90,6 +90,13 @@ class GoghWindow:
 
 
     def on_eventbox_motion_notify_event(self, widget, data=None):
+        if len(self.goghdoc.layers) == 0:
+            self.goghview.set_no_cursor()
+            self.goghview.redraw_image_for_cursor()
+            self.drawable.set_cursor(gtk.gdk.Cursor(gtk.gdk.X_CURSOR))
+            return
+        else:
+            self.reset_cursor()
         x, y = data.get_coords()
         x, y = self.goghview.to_model(x, y)
         self.goghview.set_cursor(x, y, self.brush_manager.active_brush_data)
@@ -106,6 +113,8 @@ class GoghWindow:
         self.goghview.redraw_image_for_cursor()
 
     def on_eventbox_button_press_event(self, widget, data=None):
+        if len(self.goghdoc.layers) == 0:
+            return
         x, y = data.get_coords()
         if data.state & gtk.gdk.SHIFT_MASK:
             color = self.get_color_at(x, y)
