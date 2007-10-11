@@ -224,6 +224,25 @@ class ChangeLayerOpacityAction(Action):
     def redo(self):
         self.execute()
 
+class RenameLayerAction(Action):
+    def __init__(self, goghdoc, layer_key, new_name):
+        self.goghdoc = goghdoc
+        self.layer_key = layer_key
+        self.new_name = new_name
+        self.old_name = self.goghdoc.layer_for_key(self.layer_key).name
+        self.trivial = (self.new_name==self.old_name)
+
+    def execute(self):
+        self.goghdoc.layer_for_key(self.layer_key).name = self.new_name
+        self.goghdoc.pixbuf_observer.notify_all()
+
+    def undo(self):
+        self.goghdoc.layer_for_key(self.layer_key).name = self.old_name
+        self.goghdoc.pixbuf_observer.notify_all()
+
+    def redo(self):
+        self.execute()
+
 
 class ChangeLayerBlendModeAction(Action):
     def __init__(self, goghdoc, layer_key, new_blend_mode):

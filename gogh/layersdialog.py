@@ -23,7 +23,7 @@ from __future__ import division
 import gtk
 import gtk.gdk
 import gtk.glade
-from command import ChangeLayerOpacityAction, ChangeLayerBlendModeAction
+from command import ChangeLayerOpacityAction, ChangeLayerBlendModeAction, RenameLayerAction
 from goghtooldialog import GoghToolDialog
 from goghutil import *
 from goghdoc import LayerBlendModes
@@ -87,10 +87,23 @@ class LayerControl:
         change_layer_blend_mode_action = ChangeLayerBlendModeAction(self.goghdoc, self.layer.key, new_blend_mode)
         self.goghdoc.command_stack.add(change_layer_blend_mode_action)
 
+    def on_rename_layer_button_clicked(self, widget, data=None):
+        rename_layer_dialog_xml = gtk.glade.XML(get_abspath("glade/goghglade.glade"), root="rename_layer_dialog")
+        rename_layer_dialog = rename_layer_dialog_xml.get_widget("rename_layer_dialog")
+        layer_name_entry = rename_layer_dialog_xml.get_widget("layer_name_entry")
+        layer_name_entry.set_text(self.layer.name)
+        response = rename_layer_dialog.run()
+        if response == gtk.RESPONSE_OK :
+            rename_layer_action = RenameLayerAction(self.goghdoc, self.layer.key, layer_name_entry.get_text())
+            self.goghdoc.command_stack.add(rename_layer_action)
+        rename_layer_dialog.hide()
+
+
 
     def reset(self):
         self.thumbnail_area.window.invalidate_rect(None, False)
         self.opacity_scale.set_value(self.layer.alpha)
+        self.layer_name_label.set_text(self.layer.name)
         self.blend_mode_combobox.set_active(find_item(self.liststore, lambda(row): row[0]==self.layer.blend_mode).path[0])
 
 
