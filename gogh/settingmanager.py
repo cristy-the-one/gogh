@@ -24,7 +24,6 @@ import os
 import os.path
 
 import xml.dom.minidom
-import xml.dom.ext
 
 from goghutil import get_abspath
 
@@ -52,7 +51,7 @@ def save_brush_list_xmldoc(doc):
         save_path = os.path.join(get_settings_path(), 'custom_brushlist.xml')
         create_settings_directory()
         f = open(save_path, "w")
-        xml.dom.ext.PrettyPrint(doc, f)
+        f.write(doc.toprettyxml())
         f.close()
     except:
         print _('Cannot save custom brush list')
