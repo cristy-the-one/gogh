@@ -37,7 +37,7 @@ class BrushGroup:
 
 class BrushManager:
     def __init__(self):
-        self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser, 'smudge': BrushType.Smudge}
+        self.brush_types = {'pen': BrushType.Pen, 'eraser': BrushType.Eraser, 'smudge': BrushType.Smudge }#, 'bucket': BrushType.Bucket}
         self.brush_type_names = inverse_dictionary(self.brush_types)
         self.init_brush_list()
         self.current_pen_data = self.default_pen_data
@@ -62,7 +62,7 @@ class BrushManager:
             if child_node.localName=='smudge-amount':
                 brush.smudge_amount = float(child_node.getAttribute("value"))
             if child_node.localName=='type':
-                brush.brush_type = self.brush_types[child_node.childNodes[0].nodeValue]
+                brush.brush_type = self.brush_types[child_node.childNodes[0].nodeValue.strip()]
             if child_node.localName=='default-eraser':
                 self.default_eraser_data = brush
             if child_node.localName=='default-pen':
