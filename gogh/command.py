@@ -284,6 +284,7 @@ class ResizeAction(Action):
         self.goghdoc.height+=self.top+self.bottom
         for layer in self.goghdoc.layers:
             new_pixbuf = create_pixbuf(self.goghdoc.width,self.goghdoc.height)
+            new_pixbuf.fill(0xFFFFFF00)
             copy_onto(layer.pixbuf.get_pixels_array(), new_pixbuf.get_pixels_array(), self.left, self.top)
             layer.pixbuf = new_pixbuf
         self.recomposite_goghdoc()
