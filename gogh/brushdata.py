@@ -26,7 +26,7 @@ import gtk.glade
 import copy
 
 class BrushType:
-    Pen, Eraser, Smudge = range(3)
+    Pen, Eraser, Smudge, Bucket = range(4)
 
 class BrushData:
     def __init__(self, name = "Custom", min_width = 1, max_width=4, min_opacity=0, max_opacity=1, step=1, smudge_amount=0.5, brush_type = BrushType.Pen):

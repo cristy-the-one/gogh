@@ -42,6 +42,7 @@ from colordialog import ColorDialog
 from brushmanagementdialog import BrushManagementDialog
 from goghutil import *
 from command import *
+from floodfill import create_flood_fill_action
 import goghglobals
 
 
@@ -122,15 +123,21 @@ class GoghWindow:
         else :
             x, y = self.goghview.to_model(x, y)
             color = self.color_select_dialog.colorsel.get_current_color()
-            if self.brush_manager.active_brush_data.brush_type == BrushType.Smudge:
-                self.brush_stroke = SmudgeBrushStroke(self.goghview, self.layers_dialog.selected_layer_key, self.brush_manager.active_brush_data)
-            else :
-                self.brush_stroke = BrushStroke(self.goghview, self.layers_dialog.selected_layer_key, color, self.brush_manager.active_brush_data)
-            if data.device.source==gtk.gdk.SOURCE_ERASER:
-                self.brush_stroke.is_erazer= True
-            self.saved_pixbuf = self.get_selected_layer_pixbuf().copy()
-            self.brush_stroke.start_draw(x, y)
-            self.is_pressed = True
+            if self.brush_manager.active_brush_data.brush_type == BrushType.Bucket:
+                bucket_action = create_flood_fill_action(self.goghdoc, self.layers_dialog.selected_layer_key, x, y, color)
+                self.goghdoc.command_stack.add(bucket_action)
+                rect = bucket_action.edit_area
+                self.goghview.image_observer.notify_all(rect_from_list(self.goghview.to_view_rect(rect[0], rect[1], rect[2], rect[3])), False)
+            else:
+                if self.brush_manager.active_brush_data.brush_type == BrushType.Smudge:
+                    self.brush_stroke = SmudgeBrushStroke(self.goghview, self.layers_dialog.selected_layer_key, self.brush_manager.active_brush_data)
+                else :
+                    self.brush_stroke = BrushStroke(self.goghview, self.layers_dialog.selected_layer_key, color, self.brush_manager.active_brush_data)
+                if data.device.source==gtk.gdk.SOURCE_ERASER:
+                    self.brush_stroke.is_erazer= True
+                self.saved_pixbuf = self.get_selected_layer_pixbuf().copy()
+                self.brush_stroke.start_draw(x, y)
+                self.is_pressed = True
 
     def on_eventbox_button_release_event(self, widget, data=None):
         if self.is_pressed :
