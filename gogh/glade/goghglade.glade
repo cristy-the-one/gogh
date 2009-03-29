@@ -511,7 +511,7 @@
               <widget class="GtkSpinButton" id="width_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">400 0 10240 1 50 50</property>
+                <property name="adjustment">400 0 10240 1 50 0</property>
                 <property name="climb_rate">1</property>
               </widget>
               <packing>
@@ -525,7 +525,7 @@
               <widget class="GtkSpinButton" id="height_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">400 0 10240 1 50 50</property>
+                <property name="adjustment">400 0 10240 1 50 0</property>
                 <property name="climb_rate">1</property>
               </widget>
               <packing>
@@ -607,7 +607,7 @@
               <widget class="GtkSpinButton" id="left_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">0 -1024 1024 1 10 10</property>
+                <property name="adjustment">0 -1024 1024 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <property name="update_policy">GTK_UPDATE_IF_VALID</property>
@@ -625,7 +625,7 @@
               <widget class="GtkSpinButton" id="top_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">0 -1024 1024 1 10 10</property>
+                <property name="adjustment">0 -1024 1024 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <property name="update_policy">GTK_UPDATE_IF_VALID</property>
@@ -643,7 +643,7 @@
               <widget class="GtkSpinButton" id="bottom_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">0 -1024 1024 1 10 10</property>
+                <property name="adjustment">0 -1024 1024 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <property name="update_policy">GTK_UPDATE_IF_VALID</property>
@@ -661,7 +661,7 @@
               <widget class="GtkSpinButton" id="right_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">0 -1024 1024 1 10 10</property>
+                <property name="adjustment">0 -1024 1024 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <property name="update_policy">GTK_UPDATE_IF_VALID</property>
@@ -854,7 +854,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="update_policy">GTK_UPDATE_DISCONTINUOUS</property>
-            <property name="adjustment">1 0 1 0.01 0.10000000000000001 0</property>
+            <property name="adjustment">1 0 1 0.01 0.1 0</property>
             <property name="digits">2</property>
             <signal name="value_changed" handler="on_opacity_scale_value_changed"/>
           </widget>
@@ -1366,7 +1366,7 @@ JPEG image</property>
               <widget class="GtkSpinButton" id="width_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">1 1 10000 1 10 10</property>
+                <property name="adjustment">1 1 10000 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <signal name="changed" handler="on_width_spin_changed"/>
@@ -1381,7 +1381,7 @@ JPEG image</property>
               <widget class="GtkSpinButton" id="height_spin">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">1 1 10000 1 10 10</property>
+                <property name="adjustment">1 1 10000 1 10 0</property>
                 <property name="climb_rate">1</property>
                 <property name="numeric">True</property>
                 <signal name="changed" handler="on_height_spin_changed"/>
