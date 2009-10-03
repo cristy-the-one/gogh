@@ -42,7 +42,7 @@ def subtract_alpha(src, dest, x, y, alpha):
     h = min(src.get_height(), dest.get_height()-y)
     dest_alphas = dest.get_pixels_array()[y:y+h,x:x+w,3]
     src_alphas = (src.get_pixels_array()[0:h,0:w,3]*alpha)
-    dest_alphas[:,:] = maximum(0, (dest_alphas - src_alphas)).astype(UInt8)[:,:]
+    dest_alphas[:,:] = maximum(0, (dest_alphas.astype(int) - src_alphas)).astype(UInt8)[:,:]
 
 def create_pixbuf(w, h):
     return gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)
@@ -72,9 +72,9 @@ def swap_items(itemlist, i, j):
     itemlist[i], itemlist[j] = itemlist[j], itemlist[i]
 
 def shift_array_down(a, x):
-    b = a[:-1]*x
+    b = a[:-1,:]*x
     c = a*(1-x)
-    add(c[1:], b, c[1:])
+    add(c[1:,:], b, c[1:,:])
     return c
 
 def shift_array_right(a, x):
