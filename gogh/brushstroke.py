@@ -24,7 +24,7 @@ import gtk
 import gtk.gdk
 import gtk.glade
 import math
-from Numeric import *
+from numpy import *
 
 from goghdoc import GoghDoc
 from brushprovider import BrushProvider
@@ -54,7 +54,7 @@ class DabRect:
         self.coords = DabRectCoords(x1, y1, x2, y2, brush_provider, max_pressure)
         self.max_pressure = max_pressure
         self.brush_provider = brush_provider
-        self.alphas = zeros((self.coords.height, self.coords.width), Float)
+        self.alphas = zeros((self.coords.height, self.coords.width), float)
 
 
     def put_brush(self, x, y, pressure):
@@ -75,7 +75,7 @@ class DabRect:
         pixel_value = (color.red >> 8 << 16)+(color.green >> 8 << 8)+(color.blue >> 8)
         pixel_value <<= 8
         pixbuf.fill(pixel_value)
-        pixbuf.get_pixels_array()[:,:,3] = (255*self.alphas[trimmed_rect.y:trimmed_rect.y+trimmed_rect.height, trimmed_rect.x:trimmed_rect.x+trimmed_rect.width]).astype(UInt8)
+        pixbuf.get_pixels_array()[:,:,3] = (255*self.alphas[trimmed_rect.y:trimmed_rect.y+trimmed_rect.height, trimmed_rect.x:trimmed_rect.x+trimmed_rect.width]).astype(uint8)
         return pixbuf
 
 class AbstractBrushStroke:
@@ -184,7 +184,7 @@ class SmudgeBrushStroke (AbstractBrushStroke):
         for x, y, pressure in intermediate_coords:
             adj_brush = self.brush_provider.get_adjusted_brush(pressure, x-int(x), y-int(y))
             brush_w, brush_h = adj_brush.shape[0], adj_brush.shape[1]
-            brush = zeros((brush_w, brush_h, 1), Float)
+            brush = zeros((brush_w, brush_h, 1), float)
             brush[...,0] = adj_brush[...]
             xt = int(floor(x))-adj_brush.shape[1]//2
             yt = int(floor(y))-adj_brush.shape[0]//2
@@ -195,6 +195,6 @@ class SmudgeBrushStroke (AbstractBrushStroke):
                 if (x_ofs2-x_ofs<brush_w) and (y_ofs2-y_ofs<brush_h):
                     brush_fragment = brush[-y_ofs:brush_h-y_ofs2,-x_ofs:brush_w-x_ofs2]
                     t = pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-smudge_amt)+pix_array[self.y_prev-y_ofs:self.y_prev+brush_h-y_ofs2, self.x_prev-x_ofs:self.x_prev+brush_w-x_ofs2]*smudge_amt
-                    pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2] = (minimum(255, 0.5+pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-brush_fragment)+t*brush_fragment)).astype(UInt8)[:,:]
+                    pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2] = (minimum(255, 0.5+pix_array[yt-y_ofs:yt+brush_h-y_ofs2, xt-x_ofs:xt+brush_w-x_ofs2]*(1-brush_fragment)+t*brush_fragment)).astype(uint8)[:,:]
             self.x_prev, self.y_prev = xt, yt
         self.goghdoc.combine_layers(self.bounding_rectangle.x, self.bounding_rectangle.y, self.bounding_rectangle.width, self.bounding_rectangle.height)

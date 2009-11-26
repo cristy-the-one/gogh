@@ -21,7 +21,7 @@
 from __future__ import division
 
 import math
-from Numeric import *
+from numpy import *
 
 from goghutil import *
 
@@ -36,7 +36,7 @@ class BrushProvider:
     def create_brush(self, pressure):
         size = self.get_brush_dimensions(pressure)[0]
         center = int(ceil(size/2))
-        brush_alphas = zeros((size, size), Float)
+        brush_alphas = zeros((size, size), float)
         brush_segment =  fromfunction(lambda x,y : self.alpha_for_point(x, y, size, self.get_rounded_brush_size(pressure)/2), (center, center))
         brush_alphas[:center, :center] = brush_segment[:,:]
         brush_alphas[:center, -1:-center-1:-1] = brush_alphas[:center, :center]

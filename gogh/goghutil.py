@@ -25,7 +25,7 @@ import gtk.gdk
 import time
 import re
 import os.path
-from Numeric import *
+from numpy import *
 
 def get_pixels_from_pixbuf(pixbuf, rect):
     return pixbuf.get_pixels_array()[rect.y:rect.y+rect.height, rect.x:rect.x+rect.width,:]
@@ -42,7 +42,7 @@ def subtract_alpha(src, dest, x, y, alpha):
     h = min(src.get_height(), dest.get_height()-y)
     dest_alphas = dest.get_pixels_array()[y:y+h,x:x+w,3]
     src_alphas = (src.get_pixels_array()[0:h,0:w,3]*alpha)
-    dest_alphas[:,:] = maximum(0, (dest_alphas.astype(int) - src_alphas)).astype(UInt8)[:,:]
+    dest_alphas[:,:] = maximum(0, (dest_alphas.astype(int) - src_alphas)).astype(uint8)[:,:]
 
 def create_pixbuf(w, h):
     return gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, w, h)

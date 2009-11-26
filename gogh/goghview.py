@@ -20,7 +20,7 @@
 
 from __future__ import division
 
-from Numeric import *
+from numpy import *
 import gtk.gdk
 
 from goghutil import *

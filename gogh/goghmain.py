@@ -27,7 +27,7 @@ import math
 import sys
 import gnome.ui
 import cPickle as pickle
-from Numeric import *
+from numpy import *
 
 from goghdoc import GoghDoc
 from goghview import GoghView

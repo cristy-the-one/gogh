@@ -150,7 +150,7 @@ class GoghDoc:
     def blend_areas(self, dest, src, blend_mode, alpha):
         dest_rgb, dest_alpha = dest[:, :, 0:3], dest[:, :, 3]
         src_rgb, src_alpha = src[:, :, 0:3], src[:, :, 3]
-        dest_alpha[:,:] = (255-(255-dest_alpha)*(255-src_alpha)/255).astype(UInt8)[:,:]
+        dest_alpha[:,:] = (255-(255-dest_alpha)*(255-src_alpha)/255).astype(uint8)[:,:]
         alphas = (src[:, :, 3:]*alpha/255.0)[:,:,:]
         if blend_mode==LayerBlendModes.Add:
             result = minimum(255, dest_rgb+src_rgb*alphas)
@@ -171,7 +171,7 @@ class GoghDoc:
             result = maximum(dest_rgb, src_rgb)
             result = result*alphas+dest_rgb*(1-alphas)
 
-        dest_rgb[:, :, :] = result.astype(UInt8)[:,:,:]
+        dest_rgb[:, :, :] = result.astype(uint8)[:,:,:]
 
 
     def reset_composite(self):
