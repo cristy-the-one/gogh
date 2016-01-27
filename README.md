@@ -1,5 +1,6 @@
 # gogh
 Automatically exported from code.google.com/p/gogh
+
 Gogh is a GNU/Linux bitmap graphics editor. It is designed to work with pressure-sensitive input devices, like a Wacom tablet.
 
 Feature list:
